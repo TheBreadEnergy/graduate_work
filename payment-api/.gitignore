@@ -152,7 +152,7 @@ fabric.properties
  .idea/modules
  *.iml
  *.ipr
- .idea/*.*
+.idea/
 
 
 # CMake
