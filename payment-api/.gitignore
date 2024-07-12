@@ -152,6 +152,8 @@ fabric.properties
  .idea/modules
  *.iml
  *.ipr
+ .idea/*.*
+
 
 # CMake
 
