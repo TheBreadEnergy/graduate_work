@@ -20,7 +20,8 @@
 4. [Kafka](https://kafka.apache.org) - распределенная платформа потоковой передачи событий. В нее будут складываться события об изменениях статусов оплаты и возврата
 5. [Django](https://docs.djangoproject.com/en/5.0/ref/models/fields/) - веб - фреймворк. Она будет служить админкой для платежной системы для получения сведений о платеже
 6. [APScheduler](https://apscheduler.readthedocs.io/en/3.x/) - будет выступать в роли асихнронного шедулера для нотификации пользователя о необходимости оплатить
-В качестве платежной системы выступает [Yoomoney (Yookassa)](https://yoomoney.ru)
+
+7. В качестве платежной системы выступает [Yoomoney (Yookassa)](https://yoomoney.ru)
 c их python [SDK](https://git.yoomoney.ru/projects/SDK/repos/yookassa-sdk-python/browse/README.md)
 
 
