@@ -203,20 +203,6 @@ files = [
 colors = ["colorama (>=0.4.6)"]
 
 [[package]]
-name = "kafka-python"
-version = "2.0.2"
-description = "Pure Python client for Apache Kafka"
-optional = false
-python-versions = "*"
-files = [
-    {file = "kafka-python-2.0.2.tar.gz", hash = "sha256:04dfe7fea2b63726cd6f3e79a2d86e709d608d74406638c5da33a01d45a9d7e3"},
-    {file = "kafka_python-2.0.2-py2.py3-none-any.whl", hash = "sha256:2d92418c7cb1c298fa6c7f0fb3519b520d0d7526ac6cb7ae2a4fc65a51a94b6e"},
-]
-
-[package.extras]
-crc32c = ["crc32c"]
-
-[[package]]
 name = "kafka-python-ng"
 version = "2.2.2"
 description = "Pure Python client for Apache Kafka"
@@ -630,4 +616,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "90c244bc3a36dc836f18ec5bf020d1b61f025c0a6b4d7b8fb04ce9ae7366cfc0"
+content-hash = "848f102bef92b259e614bdf6e3d2557514c59197999c922946d7dc42bb8a22e7"

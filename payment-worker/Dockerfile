@@ -7,14 +7,13 @@ ENV PYTHONFAULTHANDLER=1 \
   DOCKERIZE_VERSION="v0.7.0" \
   PYTHONDONTWRITEBYTECODE=1
 
-WORKDIR /payment-worker
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
 
 RUN pip install poetry && \
-    poetry config virtualenvs.in-project true
-
-COPY pyproject.toml .
-
-RUN poetry install --without dev
+    poetry config virtualenvs.in-project true && \
+    poetry install --no-root --without dev
 
 COPY . .
 

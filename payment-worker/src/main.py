@@ -1,5 +1,5 @@
-from src.broker.client import KafkaClient
-from src.core.config import settings
+from broker.client import KafkaClient
+from core.config import settings
 
 if __name__ == "__main__":
     kafka_client = KafkaClient(

@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
   kafka-0:
+    container_name: kafka-0
     image: bitnami/kafka:latest
     ports:
       - "9094:9094"
@@ -22,6 +23,7 @@ services:
   
   
   kafka-1:
+    container_name: kafka-1
     image: bitnami/kafka:latest
     ports:
       - "9095:9095"
@@ -41,6 +43,7 @@ services:
       - kafka_1_data:/bitnami/kafka
   
   kafka-2:
+    container_name: kafka-2
     image: bitnami/kafka:latest
     ports:
       - "9096:9096"
@@ -59,6 +62,7 @@ services:
       - kafka_2_data:/bitnami/kafka
 
   kafka-ui:
+    container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
     ports:
       - "8080:8080"
@@ -68,21 +72,27 @@ services:
       - KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL=PLAINTEXT
 
   worker-0:
+    container_name: worker-0
     build: ./payment-worker
+    env_file:
+      - envs/.env.worker
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka-0:9092,kafka-1:9092,kafka-2:9092
       - WORKER_ID=worker-0
 
   worker-1:
+    container_name: worker-1
     build: ./payment-worker
+    env_file:
+      - envs/.env.worker
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka-0:9092,kafka-1:9092,kafka-2:9092
       - WORKER_ID=worker-1
 
   worker-2:
+    container_name: worker-2
     build: ./payment-worker
+    env_file:
+      - envs/.env.worker
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka-0:9092,kafka-1:9092,kafka-2:9092
       - WORKER_ID=worker-2
 
 volumes:

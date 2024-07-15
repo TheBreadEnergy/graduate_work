@@ -2,6 +2,8 @@ import json
 from typing import List
 
 import backoff
+from broker.base import AbstractKafkaClient
+from core.config import settings
 from kafka import KafkaAdminClient, KafkaConsumer
 from kafka.admin import NewTopic
 from kafka.errors import (
@@ -10,8 +12,6 @@ from kafka.errors import (
     NoBrokersAvailable,
     TopicAlreadyExistsError,
 )
-from src.broker.base import AbstractKafkaClient
-from src.core.config import settings
 
 
 class KafkaClient(AbstractKafkaClient):
