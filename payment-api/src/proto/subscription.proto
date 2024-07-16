@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+
+
+message SubscriptionRequest {
+  string subscription_id = 1;
+}
+
+message SubscriptionResponse {
+  string id = 1;
+  string name = 2;
+  string account_id = 3;
+  double price = 4;
+  string currency = 5;
+
+}
+
+
+
+service SubscriptionManager {
+  rpc GetSubscription (SubscriptionRequest) returns (SubscriptionResponse) {}
+}

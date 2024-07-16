@@ -15,6 +15,7 @@ asyncpg = "^0.29.0"
 alembic = "^1.13.2"
 redis = "^5.0.7"
 yookassa = "^3.3.0"
+backoff = "^2.2.1"
 
 
 [build-system]
