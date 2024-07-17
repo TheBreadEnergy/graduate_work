@@ -66,7 +66,9 @@ class YooKassaPaymentGateway(PaymentGateway):
         payment_payload: ResponsePaymentData = result.payment_method
         return PayStatusSchema(
             status=result.status,
-            confirmation_url=result.confirmation.confirmation_url,
+            confirmation_url=(
+                result.confirmation.confirmation_url if not wallet_id else None
+            ),
             reason=(
                 result.cancellation_details.reason
                 if result.cancellation_details.reason
