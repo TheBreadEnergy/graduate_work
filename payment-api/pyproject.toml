@@ -16,6 +16,8 @@ alembic = "^1.13.2"
 redis = "^5.0.7"
 yookassa = "^3.3.0"
 backoff = "^2.2.1"
+fastapi-pagination = "^0.12.26"
+isort = "^5.13.2"
 
 
 [build-system]

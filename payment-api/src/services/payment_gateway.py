@@ -5,30 +5,21 @@ from uuid import UUID
 import yookassa
 from src.core.settings import settings
 from src.models.domain.payment import Payment
-from src.schemas.v1.payments import (
-    CustomerInformation,
-    PaymentCreateSchema,
-    PaymentMethod,
-    PaymentStatusSchema,
-    ProductInformation,
-)
-from src.schemas.v1.refunds import RefundStatusSchema
+from src.schemas.v1.billing.payments import PayMethod, PaySchema, PayStatusSchema
+from src.schemas.v1.billing.refunds import RefundStatusSchema
 from yookassa import Refund
-from yookassa.domain.models import Receipt, ReceiptItem
 from yookassa.domain.models.payment_data.payment_data import ResponsePaymentData
 from yookassa.domain.request import PaymentRequestBuilder
-
-# TODO: Create builder from Payment and Refund Results
 
 
 class PaymentGateway(ABC):
     @abstractmethod
     def create_payment(
         self,
-        payment_data: PaymentCreateSchema,
+        payment_data: PaySchema,
         wallet_id: UUID | None = None,
         idempotency_key: UUID | None = None,
-    ) -> PaymentStatusSchema:
+    ) -> PayStatusSchema:
         ...
 
     @abstractmethod
@@ -38,36 +29,17 @@ class PaymentGateway(ABC):
     @abstractmethod
     def cancel_payment(
         self, payment_id: UUID, idempotency_key: UUID | None = None
-    ) -> PaymentStatusSchema:
+    ) -> PayStatusSchema:
         ...
 
 
 class YooKassaPaymentGateway(PaymentGateway):
-    def _build_receipt(
-        self, customer_info: CustomerInformation, product_info: ProductInformation
-    ):
-        receipt = Receipt()
-        receipt.customer = customer_info.model_dump()
-        receipt.items = [
-            ReceiptItem(
-                {
-                    "description": product_info.product_name,
-                    "amount": {
-                        "value": product_info.price,
-                        "currency": product_info.currency,
-                    },
-                    "vat_code": settings.nds,
-                }
-            )
-        ]
-        return receipt
-
     def create_payment(
         self,
-        payment_data: PaymentCreateSchema,
+        payment_data: PaySchema,
         wallet_id: UUID | None = None,
         idempotency_key: UUID | None = None,
-    ) -> PaymentStatusSchema:
+    ) -> PayStatusSchema:
         if not idempotency_key:
             idempotency_key = uuid.uuid4()
 
@@ -92,7 +64,7 @@ class YooKassaPaymentGateway(PaymentGateway):
         request = builder.build()
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
-        return PaymentStatusSchema(
+        return PayStatusSchema(
             status=result.status,
             confirmation_url=result.confirmation.confirmation_url,
             reason=(
@@ -101,9 +73,7 @@ class YooKassaPaymentGateway(PaymentGateway):
                 else None
             ),
             payment_method=(
-                PaymentMethod(
-                    title=payment_payload.title, payment_id=payment_payload.id
-                )
+                PayMethod(title=payment_payload.title, payment_id=payment_payload.id)
                 if payment_data.save_payment_method or result.payment_method
                 else None
             ),
@@ -111,13 +81,13 @@ class YooKassaPaymentGateway(PaymentGateway):
 
     def cancel_payment(
         self, payment_id: UUID, idempontancy_key: UUID | None = None
-    ) -> PaymentStatusSchema:
+    ) -> PayStatusSchema:
         if not idempontancy_key:
             idempontancy_key = uuid.uuid4()
         result = yookassa.Payment.cancel(
             payment_id=payment_id, idempotency_key=idempontancy_key
         )
-        return PaymentStatusSchema(
+        return PayStatusSchema(
             status=result.status,
             confirmation_url=result.confirmation.confirmation_url,
             reason=(

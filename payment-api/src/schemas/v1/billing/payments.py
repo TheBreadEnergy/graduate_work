@@ -2,14 +2,10 @@ import decimal
 from uuid import UUID
 
 from pydantic import BaseModel
-from src.models.domain.payment import PaymentStatus
+from src.enums.payment import PaymentStatus
 
 
-class CustomerInformation(BaseModel):
-    email: str
-
-
-class PaymentMethod(BaseModel):
+class PayMethod(BaseModel):
     title: str
     payment_id: UUID
 
@@ -17,21 +13,19 @@ class PaymentMethod(BaseModel):
 class ProductInformation(BaseModel):
     product_id: UUID
     product_name: str
-    price: decimal
+    price: decimal.Decimal
     currency: str
 
 
-class PaymentCreateSchema(BaseModel):
-    price: decimal
+class PaySchema(BaseModel):
     description: str
     product_information: ProductInformation
-    customer_information: CustomerInformation
     payment_method: str
     save_payment_method: bool
 
 
-class PaymentStatusSchema(BaseModel):
+class PayStatusSchema(BaseModel):
     status: PaymentStatus
     redirection_url: str | None
+    payment_information: PayMethod | None = None
     reason: str | None
-    payment_information: PaymentMethod | None = None
