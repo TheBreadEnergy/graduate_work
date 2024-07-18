@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from uuid import UUID
 
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -9,11 +9,11 @@ from src.core.pagination import PaginatedPage
 from src.database.models import refunds_table
 from src.enums.payment import PaymentStatus
 from src.models.domain.refund import Refund
-from src.repositories.base import SqlAlchemyRepository
+from src.repositories.base import RepositoryABC, SqlAlchemyRepository
 from src.schemas.v1.crud.refunds import RefundCreateSchema
 
 
-class RefundRepositoryABC(ABC):
+class RefundRepositoryABC(RepositoryABC):
     @abstractmethod
     async def filter_by_status(self, *, status: PaymentStatus) -> PaginatedPage[Refund]:
         ...

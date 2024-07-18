@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 
 from src.core.pagination import PaginatedPage
+from src.enums.payment import PaymentStatus
+from src.exceptions.payment import PaymentNotFoundException
 from src.models.domain.payment import Payment
 from src.repositories.payment import PaymentRepositoryABC
 from src.repositories.wallet import WalletRepositoryABC
@@ -25,6 +27,12 @@ class PaymentQueryServiceABC(ABC):
     async def get_payment(self, payment_id: UUID) -> Payment:
         ...
 
+    @abstractmethod
+    async def filter_payments_by_status(
+        self, status: PaymentStatus
+    ) -> PaginatedPage[Payment]:
+        ...
+
 
 class PaymentQueryService(PaymentQueryServiceABC):
     def __init__(self, payment_repository: PaymentRepositoryABC):
@@ -36,7 +44,15 @@ class PaymentQueryService(PaymentQueryServiceABC):
         return await self._repo.gets(account_id=account_id)
 
     async def get_payment(self, payment_id: UUID) -> Payment:
-        return await self._repo.get(entity_id=payment_id)
+        payment = await self._repo.get(entity_id=payment_id)
+        if not payment:
+            raise PaymentNotFoundException()
+        return payment
+
+    async def filter_payments_by_status(
+        self, status: PaymentStatus
+    ) -> PaginatedPage[Payment]:
+        return await self._repo.filter_by_status(status=status)
 
 
 class PaymentServiceABC(ABC):
