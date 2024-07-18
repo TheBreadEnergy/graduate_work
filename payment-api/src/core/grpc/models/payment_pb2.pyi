@@ -53,22 +53,22 @@ class BatchSubscriptionPaymentRequest(_message.Message):
     ) -> None: ...
 
 class SubscriptionPaymentResponse(_message.Message):
-    __slots__ = ("status", "redirection_url", "reason")
+    __slots__ = ("status", "reason")
     STATUS_FIELD_NUMBER: _ClassVar[int]
-    REDIRECTION_URL_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
     status: str
-    redirection_url: str
     reason: str
     def __init__(
-        self,
-        status: _Optional[str] = ...,
-        redirection_url: _Optional[str] = ...,
-        reason: _Optional[str] = ...,
+        self, status: _Optional[str] = ..., reason: _Optional[str] = ...
     ) -> None: ...
 
 class BatchSubscriptionPaymentResponse(_message.Message):
-    __slots__ = ("status",)
-    STATUS_FIELD_NUMBER: _ClassVar[int]
-    status: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, status: _Optional[_Iterable[str]] = ...) -> None: ...
+    __slots__ = ("responses",)
+    RESPONSES_FIELD_NUMBER: _ClassVar[int]
+    responses: _containers.RepeatedCompositeFieldContainer[SubscriptionPaymentResponse]
+    def __init__(
+        self,
+        responses: _Optional[
+            _Iterable[_Union[SubscriptionPaymentResponse, _Mapping]]
+        ] = ...,
+    ) -> None: ...

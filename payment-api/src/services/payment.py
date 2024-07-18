@@ -1,22 +1,15 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from requests import RequestException
 from src.core.pagination import PaginatedPage
-from src.exceptions.external import ExternalPaymentUnavailableException
 from src.models.domain.payment import Payment
 from src.repositories.payment import PaymentRepositoryABC
-from src.schemas.v1.billing.payments import (
-    PaySchema,
-    PayStatusSchema,
-    ProductInformation,
-)
-from src.schemas.v1.billing.subscription import (
-    BatchSubscriptions,
-    SubscriptionPaymentData,
-)
+from src.repositories.wallet import WalletRepositoryABC
+from src.schemas.v1.billing.payments import PayStatusSchema
+from src.schemas.v1.billing.subscription import SubscriptionPaymentData
 from src.schemas.v1.crud.payments import PaymentCreateSchema
-from src.services.billing.payment_gateway import PaymentGatewayABC
+from src.schemas.v1.crud.wallets import WalletCreateSchema
+from src.services.billing.payment_gateway import PaymentGatewayABC, process_payment
 from src.services.subscription import SubscriptionManagerABC
 from src.services.uow import UnitOfWorkABC
 
@@ -52,35 +45,34 @@ class PaymentServiceABC(ABC):
         self,
         subscription_id: UUID,
         account_id,
-        subscription_manager: SubscriptionManagerABC,
+        save_payment_method: bool,
     ) -> PayStatusSchema:
         ...
 
-    @abstractmethod
-    def make_batch_payment(
-        self, subscription_lists: BatchSubscriptions
-    ) -> list[PayStatusSchema]:
-        ...
 
-
+# TODO: Refractor payment_service
 class PaymentService(PaymentServiceABC):
     def __init__(
         self,
         payment_gateway: PaymentGatewayABC,
         payment_repo: PaymentRepositoryABC,
+        wallet_repository: WalletRepositoryABC,
+        subscription_manager: SubscriptionManagerABC,
         uow: UnitOfWorkABC,
     ):
         self._gateway = payment_gateway
-        self._repo = payment_repo
+        self._payment_repo = payment_repo
+        self._wallet_repo = wallet_repository
+        self._subscription_service = subscription_manager
         self._uow = uow
 
     async def make_payment(
         self,
         subscription_id: UUID,
         account_id: UUID,
-        subscription_manager: SubscriptionManagerABC,
+        save_payment_method: bool,
     ) -> PayStatusSchema:
-        subscription = await subscription_manager.get_subscription(
+        subscription = await self._subscription_service.get_subscription(
             subscription_id=subscription_id
         )
 
@@ -91,7 +83,11 @@ class PaymentService(PaymentServiceABC):
             price=subscription.price,
             currency=subscription.currency,
         )
-        status = self._process_payment(subscription_payment_data)
+        status = process_payment(
+            self._gateway,
+            subscription_payment_data,
+            save_payment_method=save_payment_method,
+        )
         async with self._uow:
             payment = PaymentCreateSchema(
                 account_id=account_id,
@@ -101,52 +97,14 @@ class PaymentService(PaymentServiceABC):
                 status=status.status,
                 reason=status.reason,
             )
-            self._repo.insert(payment)
-            await self._uow.commit()
-        return status
-
-    async def make_batch_payment(
-        self, subscription_lists: BatchSubscriptions
-    ) -> list[PayStatusSchema]:
-        answers = []
-        async with self._uow:
-            for subscription_data in subscription_lists.subscriptions:
-                status = self._process_payment(subscription_data)
-                payment = PaymentCreateSchema(
-                    account_id=subscription_data.account_id,
-                    description=subscription_data.subscription_name,
-                    subscription_id=subscription_data.subscription_id,
-                    price=subscription_data.price,
-                    status=status.status,
-                    reason=status.reason,
+            self._payment_repo.insert(payment)
+            if save_payment_method:
+                wallet = WalletCreateSchema(
+                    account_id=account_id,
+                    payment_method_id=status.payment_information.payment_id,
+                    title=status.payment_information.title,
+                    reccurent=save_payment_method,
                 )
-                self._repo.insert(data=payment)
-                answers.append(status)
+                self._wallet_repo.insert(data=wallet)
             await self._uow.commit()
-        return answers
-
-    def _process_payment(
-        self, subscription_data: SubscriptionPaymentData
-    ) -> PayStatusSchema:
-        idempotency_key = (
-            f"{subscription_data.account_id}_{subscription_data.subscription_id}"
-        )
-        request = PaySchema(
-            description=subscription_data.subscription_name,
-            product_information=ProductInformation(
-                product_id=subscription_data.subscription_id,
-                product_name=subscription_data.subscription_name,
-                price=subscription_data.price,
-                currency=subscription_data.currency,
-            ),
-            save_payment_method=False,
-        )
-        try:
-            status = self._gateway.create_payment(
-                payment_data=request,
-                wallet_id=subscription_data.wallet_id,
-                idempotency_key=idempotency_key,
-            )
-        except RequestException as e:
-            raise ExternalPaymentUnavailableException(message=e.response.reason) from e
         return status

@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\rpayment.proto"\xab\x01\n\x1aSubscriptionPaymentRequest\x12\x17\n\x0fsubscription_id\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\x12\x16\n\twallet_id\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x19\n\x11subscription_name\x18\x04 \x01(\t\x12\r\n\x05price\x18\x05 \x01(\x01\x12\x10\n\x08\x63urrency\x18\x06 \x01(\tB\x0c\n\n_wallet_id"P\n\x1f\x42\x61tchSubscriptionPaymentRequest\x12-\n\x08requests\x18\x01 \x03(\x0b\x32\x1b.SubscriptionPaymentRequest"\x7f\n\x1bSubscriptionPaymentResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x1c\n\x0fredirection_url\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x13\n\x06reason\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x12\n\x10_redirection_urlB\t\n\x07_reason"2\n BatchSubscriptionPaymentResponse\x12\x0e\n\x06status\x18\x01 \x03(\t2\xa7\x01\n\x0ePaymentManager\x12\x42\n\x03Pay\x12\x1b.SubscriptionPaymentRequest\x1a\x1c.SubscriptionPaymentResponse"\x00\x12Q\n\x08PayBatch\x12 .BatchSubscriptionPaymentRequest\x1a!.BatchSubscriptionPaymentResponse"\x00\x62\x06proto3'
+    b'\n\rpayment.proto"\xab\x01\n\x1aSubscriptionPaymentRequest\x12\x17\n\x0fsubscription_id\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\x12\x16\n\twallet_id\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x19\n\x11subscription_name\x18\x04 \x01(\t\x12\r\n\x05price\x18\x05 \x01(\x01\x12\x10\n\x08\x63urrency\x18\x06 \x01(\tB\x0c\n\n_wallet_id"P\n\x1f\x42\x61tchSubscriptionPaymentRequest\x12-\n\x08requests\x18\x01 \x03(\x0b\x32\x1b.SubscriptionPaymentRequest"M\n\x1bSubscriptionPaymentResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x13\n\x06reason\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\t\n\x07_reason"S\n BatchSubscriptionPaymentResponse\x12/\n\tresponses\x18\x01 \x03(\x0b\x32\x1c.SubscriptionPaymentResponse2\xa7\x01\n\x0ePaymentManager\x12\x42\n\x03Pay\x12\x1b.SubscriptionPaymentRequest\x1a\x1c.SubscriptionPaymentResponse"\x00\x12Q\n\x08PayBatch\x12 .BatchSubscriptionPaymentRequest\x1a!.BatchSubscriptionPaymentResponse"\x00\x62\x06proto3'
 )
 
 _globals = globals()
@@ -27,9 +27,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals["_BATCHSUBSCRIPTIONPAYMENTREQUEST"]._serialized_start = 191
     _globals["_BATCHSUBSCRIPTIONPAYMENTREQUEST"]._serialized_end = 271
     _globals["_SUBSCRIPTIONPAYMENTRESPONSE"]._serialized_start = 273
-    _globals["_SUBSCRIPTIONPAYMENTRESPONSE"]._serialized_end = 400
-    _globals["_BATCHSUBSCRIPTIONPAYMENTRESPONSE"]._serialized_start = 402
-    _globals["_BATCHSUBSCRIPTIONPAYMENTRESPONSE"]._serialized_end = 452
-    _globals["_PAYMENTMANAGER"]._serialized_start = 455
-    _globals["_PAYMENTMANAGER"]._serialized_end = 622
+    _globals["_SUBSCRIPTIONPAYMENTRESPONSE"]._serialized_end = 350
+    _globals["_BATCHSUBSCRIPTIONPAYMENTRESPONSE"]._serialized_start = 352
+    _globals["_BATCHSUBSCRIPTIONPAYMENTRESPONSE"]._serialized_end = 435
+    _globals["_PAYMENTMANAGER"]._serialized_start = 438
+    _globals["_PAYMENTMANAGER"]._serialized_end = 605
 # @@protoc_insertion_point(module_scope)

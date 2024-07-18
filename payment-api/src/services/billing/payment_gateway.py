@@ -3,10 +3,18 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 
 import yookassa
+from requests import RequestException
 from src.core.settings import settings
+from src.exceptions.external import ExternalPaymentUnavailableException
 from src.models.domain.payment import Payment
-from src.schemas.v1.billing.payments import PayMethod, PaySchema, PayStatusSchema
+from src.schemas.v1.billing.payments import (
+    PayMethod,
+    PaySchema,
+    PayStatusSchema,
+    ProductInformation,
+)
 from src.schemas.v1.billing.refunds import RefundStatusSchema
+from src.schemas.v1.billing.subscription import SubscriptionPaymentData
 from yookassa import Refund
 from yookassa.domain.common import ConfirmationType
 from yookassa.domain.models.payment_data.payment_data import ResponsePaymentData
@@ -120,3 +128,32 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
                 else None
             ),
         )
+
+
+def process_payment(
+    gateway: PaymentGatewayABC,
+    subscription_data: SubscriptionPaymentData,
+    save_payment_method: bool = False,
+):
+    idempotency_key = (
+        f"{subscription_data.account_id}_{subscription_data.subscription_id}"
+    )
+    request = PaySchema(
+        description=subscription_data.subscription_name,
+        product_information=ProductInformation(
+            product_id=subscription_data.subscription_id,
+            product_name=subscription_data.subscription_name,
+            price=subscription_data.price,
+            currency=subscription_data.currency,
+        ),
+        save_payment_method=save_payment_method,
+    )
+    try:
+        status = gateway.create_payment(
+            payment_data=request,
+            wallet_id=subscription_data.wallet_id,
+            idempotency_key=idempotency_key,
+        )
+        return status
+    except RequestException as e:
+        raise ExternalPaymentUnavailableException(message=e.response.reason) from e
