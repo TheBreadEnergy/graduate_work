@@ -20,7 +20,7 @@ class ProductInformation(BaseModel):
 class PaySchema(BaseModel):
     description: str
     product_information: ProductInformation
-    payment_method: str
+    payment_method: str | None
     save_payment_method: bool
 
 

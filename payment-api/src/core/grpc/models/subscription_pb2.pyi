@@ -13,22 +13,19 @@ class SubscriptionRequest(_message.Message):
     def __init__(self, subscription_id: _Optional[str] = ...) -> None: ...
 
 class SubscriptionResponse(_message.Message):
-    __slots__ = ("id", "name", "account_id", "price", "currency")
-    ID_FIELD_NUMBER: _ClassVar[int]
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    ACCOUNT_ID_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("subscription_id", "subscription_name", "price", "currency")
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_NAME_FIELD_NUMBER: _ClassVar[int]
     PRICE_FIELD_NUMBER: _ClassVar[int]
     CURRENCY_FIELD_NUMBER: _ClassVar[int]
-    id: str
-    name: str
-    account_id: str
+    subscription_id: str
+    subscription_name: str
     price: float
     currency: str
     def __init__(
         self,
-        id: _Optional[str] = ...,
-        name: _Optional[str] = ...,
-        account_id: _Optional[str] = ...,
+        subscription_id: _Optional[str] = ...,
+        subscription_name: _Optional[str] = ...,
         price: _Optional[float] = ...,
         currency: _Optional[str] = ...,
     ) -> None: ...

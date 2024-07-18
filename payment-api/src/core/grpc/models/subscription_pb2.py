@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x12subscription.proto".\n\x13SubscriptionRequest\x12\x17\n\x0fsubscription_id\x18\x01 \x01(\t"e\n\x14SubscriptionResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x12\n\naccount_id\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x01\x12\x10\n\x08\x63urrency\x18\x05 \x01(\t2W\n\x13SubscriptionManager\x12@\n\x0fGetSubscription\x12\x14.SubscriptionRequest\x1a\x15.SubscriptionResponse"\x00\x62\x06proto3'
+    b'\n\x12subscription.proto".\n\x13SubscriptionRequest\x12\x17\n\x0fsubscription_id\x18\x01 \x01(\t"k\n\x14SubscriptionResponse\x12\x17\n\x0fsubscription_id\x18\x01 \x01(\t\x12\x19\n\x11subscription_name\x18\x02 \x01(\t\x12\r\n\x05price\x18\x03 \x01(\x01\x12\x10\n\x08\x63urrency\x18\x04 \x01(\t2W\n\x13SubscriptionManager\x12@\n\x0fGetSubscription\x12\x14.SubscriptionRequest\x1a\x15.SubscriptionResponse"\x00\x62\x06proto3'
 )
 
 _globals = globals()
@@ -25,7 +25,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals["_SUBSCRIPTIONREQUEST"]._serialized_start = 22
     _globals["_SUBSCRIPTIONREQUEST"]._serialized_end = 68
     _globals["_SUBSCRIPTIONRESPONSE"]._serialized_start = 70
-    _globals["_SUBSCRIPTIONRESPONSE"]._serialized_end = 171
-    _globals["_SUBSCRIPTIONMANAGER"]._serialized_start = 173
-    _globals["_SUBSCRIPTIONMANAGER"]._serialized_end = 260
+    _globals["_SUBSCRIPTIONRESPONSE"]._serialized_end = 177
+    _globals["_SUBSCRIPTIONMANAGER"]._serialized_start = 179
+    _globals["_SUBSCRIPTIONMANAGER"]._serialized_end = 266
 # @@protoc_insertion_point(module_scope)

@@ -3,7 +3,7 @@
 import warnings
 
 import grpc
-from src.core.grpc import subscription_pb2 as subscription__pb2
+from src.core.grpc.models import subscription_pb2 as subscription__pb2
 
 GRPC_GENERATED_VERSION = "1.64.1"
 GRPC_VERSION = grpc.__version__

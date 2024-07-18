@@ -8,17 +8,18 @@ from src.models.domain.payment import Payment
 from src.schemas.v1.billing.payments import PayMethod, PaySchema, PayStatusSchema
 from src.schemas.v1.billing.refunds import RefundStatusSchema
 from yookassa import Refund
+from yookassa.domain.common import ConfirmationType
 from yookassa.domain.models.payment_data.payment_data import ResponsePaymentData
 from yookassa.domain.request import PaymentRequestBuilder
 
 
-class PaymentGateway(ABC):
+class PaymentGatewayABC(ABC):
     @abstractmethod
     def create_payment(
         self,
         payment_data: PaySchema,
         wallet_id: UUID | None = None,
-        idempotency_key: UUID | None = None,
+        idempotency_key: str | None = None,
     ) -> PayStatusSchema:
         ...
 
@@ -33,15 +34,15 @@ class PaymentGateway(ABC):
         ...
 
 
-class YooKassaPaymentGateway(PaymentGateway):
+class YooKassaPaymentGateway(PaymentGatewayABC):
     def create_payment(
         self,
         payment_data: PaySchema,
         wallet_id: UUID | None = None,
-        idempotency_key: UUID | None = None,
+        idempotency_key: str | None = None,
     ) -> PayStatusSchema:
         if not idempotency_key:
-            idempotency_key = uuid.uuid4()
+            idempotency_key = str(uuid.uuid4())
 
         builder = PaymentRequestBuilder()
         (
@@ -61,6 +62,9 @@ class YooKassaPaymentGateway(PaymentGateway):
             builder.set_payment_method_id(str(wallet_id))
         if not wallet_id and payment_data.save_payment_method:
             builder.set_save_payment_method(True)
+        builder.set_confirmation(
+            {"type": ConfirmationType.REDIRECT, "return_url": settings.redirect_url}
+        )
         request = builder.build()
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
@@ -82,10 +86,10 @@ class YooKassaPaymentGateway(PaymentGateway):
         )
 
     def cancel_payment(
-        self, payment_id: UUID, idempontancy_key: UUID | None = None
+        self, payment_id: UUID, idempontancy_key: str | None = None
     ) -> PayStatusSchema:
         if not idempontancy_key:
-            idempontancy_key = uuid.uuid4()
+            idempontancy_key = str(uuid.uuid4())
         result = yookassa.Payment.cancel(
             payment_id=payment_id, idempotency_key=idempontancy_key
         )
