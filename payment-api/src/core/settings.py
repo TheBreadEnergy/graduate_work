@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     cache_port: int = Field(6379, alias="CACHE_PORT")
     jaeger_service: str = Field("localhost:4317", alias="JAEGER_SERVICE")
     auth_service: str = Field("localhost:50051", alias="AUTH_SERVICE")
-    redirect_url: str = Field("", alias="REDIRECT_URL")
+    redirect_url: str = Field("/", alias="REDIRECT_URL")
     shop_url: str = Field("", alias="SHOP_URL")
     shop_secret: str = Field("", alias="SHOP_SECRET")
     subscription_address: str = Field("localhost:50051", alias="SUBSCRIPTION_ADDRESS")

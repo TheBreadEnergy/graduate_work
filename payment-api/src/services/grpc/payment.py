@@ -10,7 +10,6 @@ from src.core.grpc.models.payment_pb2 import (
 )
 from src.core.grpc.services.payment_pb2_grpc import PaymentManagerServicer
 from src.exceptions.external import ExternalPaymentUnavailableException
-from src.repositories.payment import PaymentRepositoryABC
 from src.schemas.v1.billing.payments import PayStatusSchema
 from src.schemas.v1.billing.subscription import (
     BatchSubscriptions,
@@ -46,11 +45,9 @@ class GrpcPaymentService(PaymentManagerServicer):
     def __init__(
         self,
         payment_gateway: PaymentGatewayABC,
-        payment_repo: PaymentRepositoryABC,
         uow: UnitOfWorkABC,
     ):
         self._gateway = payment_gateway
-        self._payment_repo = payment_repo
         self._uow = uow
 
     def _make_payment(self, request: SubscriptionPaymentRequest) -> PayStatusSchema:
@@ -83,7 +80,7 @@ class GrpcPaymentService(PaymentManagerServicer):
                     status=response.status,
                     reason=response.reason,
                 )
-                self._payment_repo.insert(data=payment_data)
+                self._uow.payment_repository.insert(data=payment_data)
                 await self._uow.commit()
             return SubscriptionPaymentResponse(
                 status=str(response.status), reason=response.reason
@@ -111,7 +108,7 @@ class GrpcPaymentService(PaymentManagerServicer):
                         status=response.status,
                         reason=response.reason,
                     )
-                    self._payment_repo.insert(data=payment_data)
+                    self._uow.payment_repository.insert(data=payment_data)
                     results.append(
                         SubscriptionPaymentResponse(
                             status=str(response.status), reason=response.reason

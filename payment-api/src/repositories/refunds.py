@@ -33,7 +33,7 @@ class RefundRepository(
 class CachedRefundRepository(
     RefundRepositoryABC, SqlAlchemyRepository[Refund, RefundCreateSchema]
 ):
-    def __init__(self, repo: RefundRepository, cache: CacheClientABC):  # noqa
+    def __init__(self, repo: RefundRepositoryABC, cache: CacheClientABC):  # noqa
         self._repo = repo
         self._cache = cache
         self._key_entity_prefix = Refund.__name__

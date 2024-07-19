@@ -19,6 +19,7 @@ backoff = "^2.2.1"
 fastapi-pagination = "^0.12.26"
 isort = "^5.13.2"
 grpcio-tools = "^1.64.1"
+aiokafka = "^0.11.0"
 
 
 [build-system]

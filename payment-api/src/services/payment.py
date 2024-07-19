@@ -5,13 +5,14 @@ from src.core.pagination import PaginatedPage
 from src.enums.payment import PaymentStatus
 from src.exceptions.payment import PaymentNotFoundException
 from src.models.domain.payment import Payment
+from src.models.events.payment import PaymentCreatedEvent
 from src.repositories.payment import PaymentRepositoryABC
-from src.repositories.wallet import WalletRepositoryABC
 from src.schemas.v1.billing.payments import PayStatusSchema
 from src.schemas.v1.billing.subscription import SubscriptionPaymentData
 from src.schemas.v1.crud.payments import PaymentCreateSchema
 from src.schemas.v1.crud.wallets import WalletCreateSchema
 from src.services.billing.payment_gateway import PaymentGatewayABC, process_payment
+from src.services.event_handler import EventHandlerABC
 from src.services.subscription import SubscriptionManagerABC
 from src.services.uow import UnitOfWorkABC
 
@@ -66,21 +67,18 @@ class PaymentServiceABC(ABC):
         ...
 
 
-# TODO: Refractor payment_service
 class PaymentService(PaymentServiceABC):
     def __init__(
         self,
         payment_gateway: PaymentGatewayABC,
-        payment_repo: PaymentRepositoryABC,
-        wallet_repository: WalletRepositoryABC,
+        event_hander: EventHandlerABC,
         subscription_manager: SubscriptionManagerABC,
         uow: UnitOfWorkABC,
     ):
-        self._gateway = payment_gateway
-        self._payment_repo = payment_repo
-        self._wallet_repo = wallet_repository
-        self._subscription_service = subscription_manager
         self._uow = uow
+        self._gateway = payment_gateway
+        self._handler = event_hander
+        self._subscription_service = subscription_manager
 
     async def make_payment(
         self,
@@ -113,7 +111,7 @@ class PaymentService(PaymentServiceABC):
                 status=status.status,
                 reason=status.reason,
             )
-            self._payment_repo.insert(payment)
+            payment_database: Payment = self._uow.payment_repository.insert(payment)
             if save_payment_method:
                 wallet = WalletCreateSchema(
                     account_id=account_id,
@@ -121,6 +119,12 @@ class PaymentService(PaymentServiceABC):
                     title=status.payment_information.title,
                     reccurent=save_payment_method,
                 )
-                self._wallet_repo.insert(data=wallet)
+                self._uow.wallet_repository.insert(data=wallet)
             await self._uow.commit()
+        payment_event = PaymentCreatedEvent(
+            user_id=account_id,
+            license_id=payment.subscription_id,
+            payment_id=payment_database.id,
+        )
+        await self._handler.handle_payment_event(payment_event)
         return status
