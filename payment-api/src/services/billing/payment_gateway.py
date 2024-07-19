@@ -5,6 +5,7 @@ from uuid import UUID
 import yookassa
 from requests import RequestException
 from src.core.settings import settings
+from src.enums.payment import PaymentStatus
 from src.exceptions.external import ExternalPaymentUnavailableException
 from src.models.domain.payment import Payment
 from src.schemas.v1.billing.payments import (
@@ -127,6 +128,40 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
                 if result.cancellation_details
                 else None
             ),
+        )
+
+
+class MockPaymentGateway(PaymentGatewayABC):
+    def create_payment(
+        self,
+        payment_data: PaySchema,
+        wallet_id: UUID | None = None,
+        idempotency_key: str | None = None,
+    ) -> PayStatusSchema:
+        return PayStatusSchema(
+            status=PaymentStatus.success,
+            confirmation_url=None,
+            reason=None,
+            payment_method=(
+                PayMethod(title="Mock payment", payment_id=uuid.uuid4())
+                if payment_data.save_payment_method
+                else None
+            ),
+        )
+
+    def create_refund(self, payment: Payment, description: str | None = None):
+        return RefundStatusSchema(
+            status=PaymentStatus.success, payment_id=payment.id, reason=None
+        )
+
+    def cancel_payment(
+        self, payment_id: UUID, idempotency_key: UUID | None = None
+    ) -> PayStatusSchema:
+        return PayStatusSchema(
+            status=PaymentStatus.cancelled,
+            confirmation_url=None,
+            reason=None,
+            payment_method=None,
         )
 
 
