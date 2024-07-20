@@ -1,4 +1,5 @@
-from .event_handler_factory import create_event_handler  # noqa
+from .event_handler_factory import create_billing_event_handler  # noqa
+from .event_handler_factory import create_event_handler  # noqa; noqa
 from .payment_factory import create_payment_query_service  # noqa
 from .payment_factory import create_payment_service  # noqa; noqa
 from .refund_factory import create_refund_query_service, create_refund_service  # noqa

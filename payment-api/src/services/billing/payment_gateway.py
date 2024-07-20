@@ -2,9 +2,11 @@ import uuid
 from abc import ABC, abstractmethod
 from uuid import UUID
 
+import backoff
 import yookassa
+from fastapi.encoders import jsonable_encoder
 from requests import RequestException
-from src.core.settings import settings
+from src.core.settings import BACKOFF_CONFIG, settings
 from src.enums.payment import PaymentStatus
 from src.exceptions.external import ExternalPaymentUnavailableException
 from src.models.domain.payment import Payment
@@ -16,7 +18,7 @@ from src.schemas.v1.billing.payments import (
 )
 from src.schemas.v1.billing.refunds import RefundStatusSchema
 from src.schemas.v1.billing.subscription import SubscriptionPaymentData
-from yookassa import Refund
+from yookassa import Configuration, Refund
 from yookassa.domain.common import ConfirmationType
 from yookassa.domain.models.payment_data.payment_data import ResponsePaymentData
 from yookassa.domain.request import PaymentRequestBuilder
@@ -33,7 +35,12 @@ class PaymentGatewayABC(ABC):
         ...
 
     @abstractmethod
-    def create_refund(self, payment: Payment, description: str | None = None):
+    def create_refund(
+        self,
+        payment: Payment,
+        description: str | None = None,
+        idempotency_key: UUID | None = None,
+    ):
         ...
 
     @abstractmethod
@@ -44,6 +51,10 @@ class PaymentGatewayABC(ABC):
 
 
 class YooKassaPaymentGateway(PaymentGatewayABC):
+    def __init__(self):
+        Configuration.account_id = settings.shop_url
+        Configuration.secret_key = settings.shop_secret
+
     def create_payment(
         self,
         payment_data: PaySchema,
@@ -57,7 +68,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
         (
             builder.set_amount(
                 {
-                    "value": payment_data.product_information.price,
+                    "value": float(payment_data.product_information.price),
                     "currency": payment_data.product_information.currency,
                 }
             )
@@ -70,7 +81,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
         if wallet_id:
             builder.set_payment_method_id(str(wallet_id))
         if not wallet_id and payment_data.save_payment_method:
-            builder.set_save_payment_method(True)
+            builder.set_save_payment_method(payment_data.save_payment_method)
         builder.set_confirmation(
             {"type": ConfirmationType.REDIRECT, "return_url": settings.redirect_url}
         )
@@ -78,18 +89,21 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
         return PayStatusSchema(
+            payment_id=result.id,
             status=result.status,
-            confirmation_url=(
+            redirection_url=(
                 result.confirmation.confirmation_url if not wallet_id else None
             ),
             reason=(
                 result.cancellation_details.reason
-                if result.cancellation_details.reason
+                if result.cancellation_details
                 else None
             ),
             payment_method=(
-                PayMethod(title=payment_payload.title, payment_id=payment_payload.id)
-                if payment_data.save_payment_method or result.payment_method
+                PayMethod(
+                    title=result.payment_method.title, payment_id=payment_payload.id
+                )
+                if payment_payload
                 else None
             ),
         )
@@ -112,11 +126,22 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
             ),
         )
 
-    async def create_refund(self, payment: Payment, description: str | None = None):
+    def create_refund(
+        self,
+        payment: Payment,
+        description: str | None = None,
+        idempotency_key: UUID | None = None,
+    ):
+        if not idempotency_key:
+            idempotency_key = str(uuid.uuid4())
+        print(jsonable_encoder(payment))
         result = Refund.create(
             {
-                "amount": {"value": payment.price, "currency": payment.currency},
-                "payment_id": str(payment.id),
+                "amount": {
+                    "value": str(payment.price),
+                    "currency": (payment.currency if payment.currency else "RUB"),
+                },
+                "payment_id": payment.payment_id,
                 "description": payment.description if payment.description else "",
             },
         )
@@ -132,6 +157,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
 
 
 class MockPaymentGateway(PaymentGatewayABC):
+    @backoff.on_exception(**BACKOFF_CONFIG)
     def create_payment(
         self,
         payment_data: PaySchema,
@@ -149,11 +175,13 @@ class MockPaymentGateway(PaymentGatewayABC):
             ),
         )
 
+    @backoff.on_exception(**BACKOFF_CONFIG)
     def create_refund(self, payment: Payment, description: str | None = None):
         return RefundStatusSchema(
             status=PaymentStatus.success, payment_id=payment.id, reason=None
         )
 
+    @backoff.on_exception(**BACKOFF_CONFIG)
     def cancel_payment(
         self, payment_id: UUID, idempotency_key: UUID | None = None
     ) -> PayStatusSchema:
@@ -165,14 +193,13 @@ class MockPaymentGateway(PaymentGatewayABC):
         )
 
 
+@backoff.on_exception(**BACKOFF_CONFIG)
 def process_payment(
     gateway: PaymentGatewayABC,
     subscription_data: SubscriptionPaymentData,
     save_payment_method: bool = False,
 ):
-    idempotency_key = (
-        f"{subscription_data.account_id}_{subscription_data.subscription_id}"
-    )
+    idempotency_key = f"{subscription_data.account_id}"
     request = PaySchema(
         description=subscription_data.subscription_name,
         product_information=ProductInformation(
@@ -181,6 +208,7 @@ def process_payment(
             price=subscription_data.price,
             currency=subscription_data.currency,
         ),
+        payment_method=None,
         save_payment_method=save_payment_method,
     )
     try:

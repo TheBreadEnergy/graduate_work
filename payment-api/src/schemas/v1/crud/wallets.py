@@ -9,7 +9,7 @@ class WalletSchema(BaseModel):
     title: str
     account_id: UUID
     payment_method_id: UUID
-    created_at: datetime.datetime
+    created: datetime.datetime
 
 
 class WalletCreateSchema(BaseModel):

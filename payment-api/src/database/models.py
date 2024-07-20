@@ -13,8 +13,10 @@ payments_table = Table(
     "payments",
     mapper_registry.metadata,
     Column("id", sqlalchemy.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("payment_id", sqlalchemy.UUID(as_uuid=True)),
     Column("idempotency_key", sqlalchemy.TEXT, nullable=True),
     Column("description", sqlalchemy.TEXT, nullable=True),
+    Column("currency", sqlalchemy.TEXT, nullable=True),
     Column("account_id", sqlalchemy.UUID(as_uuid=True), nullable=False),
     Column("subscription_id", sqlalchemy.UUID(as_uuid=True), nullable=False),
     Column("price", sqlalchemy.DECIMAL, nullable=False),
@@ -58,8 +60,6 @@ wallets_table = Table(
     Column("created", sqlalchemy.DateTime(timezone=True), nullable=False),
 )
 
-
-def init_mappers():
-    mapper_registry.map_imperatively(Payment, payments_table)
-    mapper_registry.map_imperatively(Refund, refunds_table)
-    mapper_registry.map_imperatively(Wallet, wallets_table)
+mapper_registry.map_imperatively(Payment, payments_table)
+mapper_registry.map_imperatively(Refund, refunds_table)
+mapper_registry.map_imperatively(Wallet, wallets_table)

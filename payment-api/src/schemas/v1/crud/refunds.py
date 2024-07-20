@@ -1,3 +1,4 @@
+import datetime
 import decimal
 from uuid import UUID
 
@@ -13,6 +14,7 @@ class RefundSchema(BaseModel):
     money: decimal.Decimal
     status: PaymentStatus
     reason: str | None
+    created: datetime.datetime
 
 
 class RefundCreateSchema(BaseModel):
@@ -22,3 +24,8 @@ class RefundCreateSchema(BaseModel):
     money: decimal.Decimal
     status: PaymentStatus
     reason: str | None
+
+
+class RefundOperationSchema(BaseModel):
+    payment_id: UUID
+    description: str | None = None

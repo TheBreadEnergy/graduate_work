@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class RefundEventABC(BaseModel):
     refund_id: UUID
     created_at: datetime.datetime = Field(
-        default=lambda: datetime.datetime.now(datetime.timezone.utc)
+        default=datetime.datetime.now(datetime.timezone.utc)
     )
 
 

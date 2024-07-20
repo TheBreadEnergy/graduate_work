@@ -1,3 +1,4 @@
+import decimal
 from abc import ABC, abstractmethod
 from uuid import UUID
 
@@ -61,7 +62,10 @@ class PaymentServiceABC(ABC):
     def make_payment(
         self,
         subscription_id: UUID,
-        account_id,
+        subscription_name: str,
+        price: decimal.Decimal,
+        currency: str,
+        account_id: UUID,
         save_payment_method: bool,
     ) -> PayStatusSchema:
         ...
@@ -83,19 +87,18 @@ class PaymentService(PaymentServiceABC):
     async def make_payment(
         self,
         subscription_id: UUID,
+        subscription_name: str,
+        price: decimal.Decimal,
+        currency: str,
         account_id: UUID,
         save_payment_method: bool,
     ) -> PayStatusSchema:
-        subscription = await self._subscription_service.get_subscription(
-            subscription_id=subscription_id
-        )
-
         subscription_payment_data = SubscriptionPaymentData(
-            subscription_id=subscription.subscription_id,
+            subscription_id=subscription_id,
             account_id=account_id,
-            subscription_name=subscription.name,
-            price=subscription.price,
-            currency=subscription.currency,
+            subscription_name=subscription_name,
+            price=price,
+            currency=currency,
         )
         status = process_payment(
             self._gateway,
@@ -105,14 +108,18 @@ class PaymentService(PaymentServiceABC):
         async with self._uow:
             payment = PaymentCreateSchema(
                 account_id=account_id,
-                description=subscription.subscription_name,
-                subscription_id=subscription.subscription_id,
-                price=subscription.price,
+                description=subscription_name,
+                payment_id=status.payment_id,
+                subscription_id=subscription_id,
+                price=price,
+                currency=currency,
                 status=status.status,
                 reason=status.reason,
             )
-            payment_database: Payment = self._uow.payment_repository.insert(payment)
-            if save_payment_method:
+            payment_database: Payment = self._uow.payment_repository.insert(
+                data=payment
+            )
+            if save_payment_method and status.payment_information:
                 wallet = WalletCreateSchema(
                     account_id=account_id,
                     payment_method_id=status.payment_information.payment_id,

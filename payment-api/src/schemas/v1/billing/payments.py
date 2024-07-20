@@ -25,6 +25,7 @@ class PaySchema(BaseModel):
 
 
 class PayStatusSchema(BaseModel):
+    payment_id: UUID
     status: PaymentStatus
     redirection_url: str | None
     payment_information: PayMethod | None = None

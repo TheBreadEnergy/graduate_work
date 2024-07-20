@@ -1,6 +1,8 @@
+import json
 from abc import ABC, abstractmethod
 
 from aiokafka import AIOKafkaProducer
+from fastapi.encoders import jsonable_encoder
 from src.core.settings import settings
 from src.models.events.payment import (
     PaymentCancelledEvent,
@@ -33,17 +35,21 @@ class KafkaEventHandler(EventHandlerABC):
     async def handle_payment_event(self, event: PaymentEventABC):
         topic = self._get_topic_for_payment(event)
         await self._producer.send(
-            topic=topic, value=event.model_dump_json().encode(), key=event.payment_id
+            topic=topic,
+            value=json.dumps(jsonable_encoder(event)).encode(),
+            key=str(event.payment_id).encode(),
         )
 
     async def handle_refund_event(self, event: RefundEventABC):
-        topic = await self._get_topic_for_refund(event)
+        topic = self._get_topic_for_refund(event)
         await self._producer.send(
-            topic=topic, value=event.model_dump_json().encode(), key=event.refund_id
+            topic=topic,
+            value=json.dumps(jsonable_encoder(event)).encode(),
+            key=str(event.refund_id).encode(),
         )
 
     def _get_topic_for_payment(self, event: PaymentEventABC) -> str:
-        match type(event):
+        match event:
             case PaymentCreatedEvent():
                 return settings.payment_created_topic
             case PaymentCancelledEvent():
@@ -54,7 +60,7 @@ class KafkaEventHandler(EventHandlerABC):
                 raise NotImplementedError("Неподдерживаемый тип событий")
 
     def _get_topic_for_refund(self, event: RefundEventABC):
-        match type(event):
+        match event:
             case RefundCreatedEvent():
                 return settings.refund_created_topic
             case RefundCancelledEvent():
