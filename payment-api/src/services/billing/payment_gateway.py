@@ -90,6 +90,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
         print(request.json())
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
+        print(payment_payload.json())
         return PayStatusSchema(
             payment_id=result.id,
             status=result.status,
@@ -103,9 +104,12 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
             ),
             payment_method=(
                 PayMethod(
-                    title=result.payment_method.title, payment_id=payment_payload.id
+                    title=result.payment_method.title
+                    or f"Payment method {payment_payload.id}",
+                    payment_id=payment_payload.id,
                 )
                 if payment_payload
+                or (result.payment_method and result.payment_method.saved)
                 else None
             ),
         )
