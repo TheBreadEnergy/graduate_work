@@ -38,15 +38,32 @@ services:
   payment-api:
     <<: *api-common
     build: payment-api
-    image: payment-api:dev
+    image: payment-api-http:dev
     depends_on:
       - payment-cache
       - payment-db
     env_file:
       - envs/prod/.env.payment.api
+    environment:
+      - RUN_MODE=HTTP
     ports:
       - "8002:8000"
     restart: unless-stopped
+
+  payment-api-grpc:
+    build: payment-api
+    image: payment-api-grpc:dev
+    depends_on:
+      - payment-cache
+      - payment-db
+    env_file:
+      - envs/prod/.env.payment.api
+    environment:
+      - RUN_MODE=GRPC
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+
 
 
   redis-auth:
