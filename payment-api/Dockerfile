@@ -21,6 +21,8 @@ RUN apt-get update  \
     && apt-get -y install netcat-traditional \
     && python -m pip install --upgrade pip && pip install -r requirements.txt
 
+COPY . .
+
 RUN chmod +x docker-entrypoint.sh
 
 EXPOSE 8000
