@@ -46,8 +46,8 @@ def create_application() -> FastAPI:
     )
 
     @app.exception_handler(BaseApplicationException)
-    def authjwt_exception_handler(_: Request, exc: BaseApplicationException):
-        return JSONResponse(status_code=exc.code, content={"detail": exc.message})
+    def exception_handler(_: Request, exc: BaseApplicationException):
+        return JSONResponse(status_code=exc.code, content={"detail": str(exc.message)})
 
     app.include_router(payments.router, prefix="/api/v1/payments")
     app.include_router(refunds.router, prefix="/api/v1/refunds")

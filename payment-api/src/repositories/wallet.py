@@ -46,7 +46,7 @@ class WalletRepository(
         result = await self._session.execute(query)
         wallet = result.scalar_one_or_none()
         if not wallet:
-            return await super().insert(data=data)
+            return super().insert(data=data)
         return wallet
 
     @backoff.on_exception(**BACKOFF_CONFIG)

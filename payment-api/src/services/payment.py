@@ -129,7 +129,7 @@ class PaymentService(PaymentServiceABC):
                     title=status.payment_information.title,
                     reccurent_payment=save_payment_method,
                 )
-                self._uow.wallet_repository.insert(data=wallet)
+                await self._uow.wallet_repository.insert(data=wallet)
             await self._uow.commit()
         payment_event = PaymentCreatedEvent(
             user_id=account_id,

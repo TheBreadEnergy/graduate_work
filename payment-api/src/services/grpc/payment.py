@@ -56,6 +56,7 @@ class GrpcPaymentService(PaymentManagerServicer):
             subscription_name=request.subscription_name,
             price=decimal.Decimal(request.price),
             currency=request.currency,
+            payment_method=None,
             wallet_id=UUID(request.wallet_id),
         )
         response = process_payment(
@@ -74,6 +75,8 @@ class GrpcPaymentService(PaymentManagerServicer):
                 async with uow:
                     payment_data = PaymentCreateSchema(
                         account_id=UUID(request.account_id),
+                        payment_id=response.payment_id,
+                        currency=request.currency,
                         description=request.subscription_name,
                         subscription_id=UUID(request.subscription_id),
                         price=decimal.Decimal(request.price),
@@ -87,7 +90,7 @@ class GrpcPaymentService(PaymentManagerServicer):
                 )
             except ExternalPaymentUnavailableException as e:
                 context.set_code(grpc.StatusCode.UNAVAILABLE)
-                context.set_details(e.message)
+                context.set_details(str(e.message))
                 raise e
 
     async def PayBatch(
@@ -104,6 +107,8 @@ class GrpcPaymentService(PaymentManagerServicer):
                         response = self._make_payment(subscription)
                         payment_data = PaymentCreateSchema(
                             account_id=UUID(subscription.account_id),
+                            payment_id=response.payment_id,
+                            currency=subscription.currency,
                             description=subscription.subscription_name,
                             subscription_id=UUID(subscription.subscription_id),
                             price=decimal.Decimal(subscription.price),
@@ -120,5 +125,5 @@ class GrpcPaymentService(PaymentManagerServicer):
                     return BatchSubscriptionPaymentResponse(responses=results)
                 except ExternalPaymentUnavailableException as e:
                     context.set_code(grpc.StatusCode.UNAVAILABLE)
-                    context.set_details(e.message)
+                    context.set_details(str(e.message))
                     raise e

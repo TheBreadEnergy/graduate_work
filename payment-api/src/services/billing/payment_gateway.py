@@ -60,7 +60,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
         wallet_id: UUID | None = None,
         idempotency_key: str | None = None,
     ) -> PayStatusSchema:
-        if not idempotency_key:
+        if not idempotency_key or settings.dev:
             idempotency_key = str(uuid.uuid4())
 
         builder = PaymentRequestBuilder()
@@ -82,9 +82,10 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
         if not wallet_id and payment_data.save_payment_method:
             builder.set_save_payment_method(payment_data.save_payment_method)
             builder.set_payment_method_data({"type": payment_data.payment_method})
-        builder.set_confirmation(
-            {"type": ConfirmationType.REDIRECT, "return_url": settings.redirect_url}
-        )
+        if not wallet_id:
+            builder.set_confirmation(
+                {"type": ConfirmationType.REDIRECT, "return_url": settings.redirect_url}
+            )
         request = builder.build()
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
