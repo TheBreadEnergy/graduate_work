@@ -33,6 +33,7 @@ done
 # shellcheck disable=SC2086
 exec $cmd
 
+make database-update
 if [ "$RUN_MODE" = "GRPC" ]
 then
   python -m src.main_grpc
