@@ -7,10 +7,12 @@ from fastapi.responses import ORJSONResponse
 from fastapi_pagination import add_pagination
 from redis.asyncio import Redis
 from src import cache
+from src.api import healthcheck
 from src.api.v1 import event, payments, refunds, wallets
 from src.cache import redis
 from src.core.settings import settings
 from src.dependencies.main import setup_dependencies
+from src.middlewares.main import setup_middleware
 from src.producers import kafka
 from yookassa import Configuration
 
@@ -44,6 +46,8 @@ def create_application() -> FastAPI:
     app.include_router(refunds.router, prefix="/api/v1/refunds")
     app.include_router(wallets.router, prefix="/api/v1/wallets")
     app.include_router(event.router, prefix="/api/v1/payment-events")
+    app.include_router(healthcheck.router, tags=["Healthcheck"])
+    setup_middleware(app)
     add_pagination(app)
     setup_dependencies(app)
     return app

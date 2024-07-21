@@ -1,0 +1,86 @@
+x-api-common:
+  &api-common
+  healthcheck:
+    test: curl --header X-Request-Id:1 --fail http://localhost:8000/healthcheck || exit 1
+    interval: 10s
+    retries: 10
+    start_period: 10s
+    timeout: 10s
+
+
+
+services:
+  proxy:
+    build: nginx
+    image: payment-nginx:dev
+    depends_on:
+      auth-api:
+        condition: service_healthy
+      payment-api:
+        condition: service_healthy
+    ports:
+      - "81:80"
+    restart: unless-stopped
+
+  auth-api:
+    <<: *api-common
+    build: auth_service
+    image: app-auth-api:dev
+    depends_on:
+      - redis-auth
+      - postgres-auth
+    env_file:
+      - envs/prod/.env.api.auth
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+
+  payment-api:
+    <<: *api-common
+    build: payment-api
+    image: payment-api:dev
+    depends_on:
+      - payment-cache
+      - payment-db
+    env_file:
+      - envs/prod/.env.payment.api
+    ports:
+      - "8002:8000"
+    restart: unless-stopped
+
+
+  redis-auth:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - auth-cache:/data
+
+
+  postgres-auth:
+    image: postgres:latest
+    env_file:
+      - ./envs/prod/.env.database.auth
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+
+
+
+  payment-cache:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - payment-cache:/data
+
+  payment-db:
+    image: postgres:latest
+    env_file:
+      - ./envs/prod/.env.database.payment
+    volumes:
+      - payment-data:/var/lib/postgresql/data
+
+
+volumes:
+  auth-data:
+  auth-cache:
+  payment-data:
+  payment-cache:
