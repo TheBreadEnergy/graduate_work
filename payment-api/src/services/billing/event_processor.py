@@ -24,7 +24,7 @@ class YookassaBillingEventProcessor(BillingEventProcessorABC):
         self._handler = event_handler
 
     async def process_event(self, event: EventSchema, ip_address: str | None = None):
-        if not SecurityHelper().is_ip_trusted(ip_address) or not settings.debug:
+        if not SecurityHelper().is_ip_trusted(ip_address) and not settings.debug:
             raise ExternalIpNotTrustedException(ip_address)
         notification = WebhookNotificationFactory().create(event.model_dump())
         event = notification.object
