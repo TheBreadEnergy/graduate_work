@@ -10,6 +10,7 @@ class SubscriptionPaymentData(BaseModel):
     subscription_name: str
     price: decimal.Decimal
     currency: str
+    payment_method: str | None
     wallet_id: UUID | None = None
 
 

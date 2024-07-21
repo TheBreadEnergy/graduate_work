@@ -35,6 +35,7 @@ class PaymentOperationSchema(BaseModel):
     price: decimal.Decimal
     currency: str
     save_payment_method: bool
+    payment_method: str
 
 
 class PaymentStatusSchema(BaseModel):

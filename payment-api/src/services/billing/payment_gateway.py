@@ -82,10 +82,12 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
             builder.set_payment_method_id(str(wallet_id))
         if not wallet_id and payment_data.save_payment_method:
             builder.set_save_payment_method(payment_data.save_payment_method)
+            builder.set_payment_method_data({"type": payment_data.payment_method})
         builder.set_confirmation(
             {"type": ConfirmationType.REDIRECT, "return_url": settings.redirect_url}
         )
         request = builder.build()
+        print(request.json())
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
         return PayStatusSchema(
@@ -199,7 +201,7 @@ def process_payment(
     subscription_data: SubscriptionPaymentData,
     save_payment_method: bool = False,
 ):
-    idempotency_key = f"{subscription_data.account_id}"
+    idempotency_key = f"{str(subscription_data.account_id)[:7]}{str(subscription_data.subscription_id)[7:]}"
     request = PaySchema(
         description=subscription_data.subscription_name,
         product_information=ProductInformation(
@@ -208,7 +210,7 @@ def process_payment(
             price=subscription_data.price,
             currency=subscription_data.currency,
         ),
-        payment_method=None,
+        payment_method=subscription_data.payment_method,
         save_payment_method=save_payment_method,
     )
     try:
@@ -219,4 +221,5 @@ def process_payment(
         )
         return status
     except RequestException as e:
-        raise ExternalPaymentUnavailableException(message=e.response.reason) from e
+        print(str(e))
+        raise ExternalPaymentUnavailableException(message=e.response) from e

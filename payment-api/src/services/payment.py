@@ -67,6 +67,7 @@ class PaymentServiceABC(ABC):
         currency: str,
         account_id: UUID,
         save_payment_method: bool,
+        payment_method: str | None = None,
     ) -> PayStatusSchema:
         ...
 
@@ -92,6 +93,7 @@ class PaymentService(PaymentServiceABC):
         currency: str,
         account_id: UUID,
         save_payment_method: bool,
+        payment_method: str | None = None,
     ) -> PayStatusSchema:
         subscription_payment_data = SubscriptionPaymentData(
             subscription_id=subscription_id,
@@ -99,6 +101,7 @@ class PaymentService(PaymentServiceABC):
             subscription_name=subscription_name,
             price=price,
             currency=currency,
+            payment_method=payment_method,
         )
         status = process_payment(
             self._gateway,
