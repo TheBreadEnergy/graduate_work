@@ -87,10 +87,8 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
             {"type": ConfirmationType.REDIRECT, "return_url": settings.redirect_url}
         )
         request = builder.build()
-        print(request.json())
         result = yookassa.Payment.create(request, idempotency_key=str(idempotency_key))
         payment_payload: ResponsePaymentData = result.payment_method
-        print(payment_payload.json())
         return PayStatusSchema(
             payment_id=result.id,
             status=result.status,
