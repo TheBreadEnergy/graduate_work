@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     )
     version: str = Field("1.0.0", alias="VERSION")
     debug: bool = Field(False, alias="DEBUG")
+    dev: bool = Field(True, alias="DEV")
     echo: bool = Field(False, alias="ECHO")
     database_conn: PostgresDsn = Field(
         "postgresql+asyncpg://app:123qwe@localhost:5432/payments",
