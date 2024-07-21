@@ -127,7 +127,7 @@ class PaymentService(PaymentServiceABC):
                     account_id=account_id,
                     payment_method_id=status.payment_information.payment_id,
                     title=status.payment_information.title,
-                    reccurent=save_payment_method,
+                    reccurent_payment=save_payment_method,
                 )
                 self._uow.wallet_repository.insert(data=wallet)
             await self._uow.commit()

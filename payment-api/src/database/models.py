@@ -58,6 +58,7 @@ wallets_table = Table(
     Column("reccurent_payment", sqlalchemy.Boolean),
     Column("title", sqlalchemy.TEXT),
     Column("created", sqlalchemy.DateTime(timezone=True), nullable=False),
+    Column("preffered", sqlalchemy.Boolean, nullable=True),
 )
 
 mapper_registry.map_imperatively(Payment, payments_table)

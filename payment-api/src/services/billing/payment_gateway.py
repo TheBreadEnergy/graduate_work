@@ -4,7 +4,6 @@ from uuid import UUID
 
 import backoff
 import yookassa
-from fastapi.encoders import jsonable_encoder
 from requests import RequestException
 from src.core.settings import BACKOFF_CONFIG, settings
 from src.enums.payment import PaymentStatus
@@ -100,14 +99,13 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
                 if result.cancellation_details
                 else None
             ),
-            payment_method=(
+            payment_information=(
                 PayMethod(
                     title=result.payment_method.title
                     or f"Payment method {payment_payload.id}",
                     payment_id=payment_payload.id,
                 )
-                if payment_payload
-                or (result.payment_method and result.payment_method.saved)
+                if (payment_payload is not None) or payment_data.save_payment_method
                 else None
             ),
         )
@@ -138,7 +136,6 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
     ):
         if not idempotency_key:
             idempotency_key = str(uuid.uuid4())
-        print(jsonable_encoder(payment))
         result = Refund.create(
             {
                 "amount": {
@@ -148,6 +145,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
                 "payment_id": payment.payment_id,
                 "description": payment.description if payment.description else "",
             },
+            idempotency_key=idempotency_key,
         )
         return RefundStatusSchema(
             status=result.status,
@@ -223,5 +221,4 @@ def process_payment(
         )
         return status
     except RequestException as e:
-        print(str(e))
         raise ExternalPaymentUnavailableException(message=e.response) from e

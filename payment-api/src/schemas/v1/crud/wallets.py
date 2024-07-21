@@ -10,10 +10,15 @@ class WalletSchema(BaseModel):
     account_id: UUID
     payment_method_id: UUID
     created: datetime.datetime
+    preffered: bool | None
 
 
 class WalletCreateSchema(BaseModel):
     title: str
     account_id: UUID
+    reccurent_payment: bool = True
     payment_method_id: UUID
-    created_at: datetime.datetime
+
+
+class WalletMakePrefferableSchema(BaseModel):
+    preferrable: bool

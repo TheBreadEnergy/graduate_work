@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import Sequence
 from uuid import UUID
 
 import backoff
-from sqlalchemy import delete, select
+from sqlalchemy import and_, delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.cache.cache_client import CacheClientABC
 from src.core.pagination import PaginatedPage
@@ -15,7 +16,7 @@ from src.schemas.v1.crud.wallets import WalletCreateSchema
 
 class WalletRepositoryABC(RepositoryABC, ABC):
     @abstractmethod
-    async def get_for_user(self, *, account_id: UUID) -> Wallet | None:
+    async def get_for_user(self, *, account_id: UUID) -> list[Wallet]:
         ...
 
     @abstractmethod
@@ -30,10 +31,23 @@ class WalletRepository(
         super().__init__(session=session, model=Wallet, table=wallets_table)
 
     @backoff.on_exception(**BACKOFF_CONFIG)
-    async def get_for_user(self, *, account_id: UUID) -> Wallet | None:
+    async def get_for_user(self, *, account_id: UUID) -> Sequence[Wallet]:
         query = select(Wallet).where(self._table.c.account_id == account_id)
         result = await self._session.execute(query)
-        return result.scalar_one_or_none()
+        return result.scalars().all()
+
+    async def insert(self, *, data: WalletCreateSchema) -> Wallet:
+        query = select(Wallet).where(
+            and_(
+                self._table.c.account_id == data.account_id,
+                self._table.c.payment_method_id == data.payment_method_id,
+            )
+        )
+        result = await self._session.execute(query)
+        wallet = result.scalar_one_or_none()
+        if not wallet:
+            return await super().insert(data=data)
+        return wallet
 
     @backoff.on_exception(**BACKOFF_CONFIG)
     async def delete(self, *, entity_id: UUID) -> None:
@@ -58,16 +72,8 @@ class CachedWalletRepository(WalletRepositoryABC):
         await self._cache.insert(key=key, value=entity)
         return entity
 
-    async def get_for_user(self, *, account_id: UUID) -> Wallet | None:
-        key = f"{self._key_entity_prefix}_user_{account_id}"
-        obj = await self._cache.get(key=key)
-        if obj:
-            return Wallet(**obj)
-        entity = await self._repo.get_for_user(account_id=account_id)
-        if not entity:
-            return None
-        await self._cache.insert(key=key, value=entity)
-        return entity
+    async def get_for_user(self, *, account_id: UUID) -> list[Wallet]:
+        return await self._repo.get_for_user(account_id=account_id)
 
     async def delete(self, *, entity_id: UUID) -> None:
         entity = await self._repo.get(entity_id=entity_id)

@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from aiokafka import AIOKafkaProducer
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from fastapi_pagination import add_pagination
 from redis.asyncio import Redis
@@ -12,8 +12,10 @@ from src.api.v1 import event, payments, refunds, wallets
 from src.cache import redis
 from src.core.settings import settings
 from src.dependencies.main import setup_dependencies
+from src.exceptions.base import BaseApplicationException
 from src.middlewares.main import setup_middleware
 from src.producers import kafka
+from starlette.responses import JSONResponse
 from yookassa import Configuration
 
 
@@ -42,6 +44,11 @@ def create_application() -> FastAPI:
         version=settings.version,
         lifespan=lifespan,
     )
+
+    @app.exception_handler(BaseApplicationException)
+    def authjwt_exception_handler(_: Request, exc: BaseApplicationException):
+        return JSONResponse(status_code=exc.code, content={"detail": exc.message})
+
     app.include_router(payments.router, prefix="/api/v1/payments")
     app.include_router(refunds.router, prefix="/api/v1/refunds")
     app.include_router(wallets.router, prefix="/api/v1/wallets")
