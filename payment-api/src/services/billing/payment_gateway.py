@@ -120,6 +120,8 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
             payment_id=payment_id, idempotency_key=idempontancy_key
         )
         return PayStatusSchema(
+            payment_id=result.id,
+            redirection_url=None,
             status=result.status,
             confirmation_url=result.confirmation.confirmation_url,
             reason=(
@@ -137,26 +139,30 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
     ):
         if not idempotency_key:
             idempotency_key = str(uuid.uuid4())
-        result = Refund.create(
-            {
-                "amount": {
-                    "value": str(payment.price),
-                    "currency": (payment.currency if payment.currency else "RUB"),
+        try:
+            result = Refund.create(
+                {
+                    "amount": {
+                        "value": str(payment.price),
+                        "currency": (payment.currency if payment.currency else "RUB"),
+                    },
+                    "payment_id": payment.payment_id,
+                    "description": payment.description if payment.description else "",
                 },
-                "payment_id": payment.payment_id,
-                "description": payment.description if payment.description else "",
-            },
-            idempotency_key=idempotency_key,
-        )
-        return RefundStatusSchema(
-            status=result.status,
-            payment_id=payment.id,
-            reason=(
-                result.cancellation_details.reason
-                if result.cancellation_details
-                else None
-            ),
-        )
+                idempotency_key=idempotency_key,
+            )
+        except RequestException as e:
+            raise ExternalPaymentUnavailableException(message=str(e.response)) from e
+        else:
+            return RefundStatusSchema(
+                status=result.status,
+                payment_id=payment.id,
+                reason=(
+                    result.cancellation_details.reason
+                    if result.cancellation_details
+                    else None
+                ),
+            )
 
 
 class MockPaymentGateway(PaymentGatewayABC):
@@ -168,8 +174,9 @@ class MockPaymentGateway(PaymentGatewayABC):
         idempotency_key: str | None = None,
     ) -> PayStatusSchema:
         return PayStatusSchema(
+            payment_id=uuid.uuid4(),
             status=PaymentStatus.success,
-            confirmation_url=None,
+            redirection_url="",
             reason=None,
             payment_method=(
                 PayMethod(title="Mock payment", payment_id=uuid.uuid4())
@@ -189,8 +196,9 @@ class MockPaymentGateway(PaymentGatewayABC):
         self, payment_id: UUID, idempotency_key: UUID | None = None
     ) -> PayStatusSchema:
         return PayStatusSchema(
+            payment_id=payment_id,
             status=PaymentStatus.cancelled,
-            confirmation_url=None,
+            redirection_url=None,
             reason=None,
             payment_method=None,
         )
