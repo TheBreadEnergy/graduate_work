@@ -1,20 +1,21 @@
 import asyncio
 import logging
 
-import grpc.aio
-from src.core.grpc.services import payment_pb2_grpc
+import grpc
+from src.core.grpc.services import subscription_pb2_grpc
 from src.core.settings import settings
-from src.services.billing.payment_gateway import YooKassaPaymentGateway
-from src.services.grpc.payment import GrpcPaymentService
+from src.database.models import init_mappers
+from src.services.grpc.subscriptions import GrpcUserSubscriptionManager
 
 
 async def serve() -> None:
     logging.info("Server launching....")
     server = grpc.aio.server()
+    init_mappers()
     try:
         logging.info("Building dependencies.....")
-        payment_pb2_grpc.add_PaymentManagerServicer_to_server(
-            GrpcPaymentService(YooKassaPaymentGateway()), server
+        subscription_pb2_grpc.add_SubscriptionManagerServicer_to_server(
+            GrpcUserSubscriptionManager(), server
         )
         logging.info("Added active routes")
         server.add_insecure_port(f"[::]:{settings.grpc_port}")

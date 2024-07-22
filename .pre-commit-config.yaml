@@ -10,7 +10,7 @@ repos:
       entry: flake8
       language: python
       types: [python]
-      exclude: (?x)^(payment-api/src/migrations/.* | payment-api/src/core/grpc/.* | src/services/grpc/.*| auth_service/src/migrations/.* | )$
+      exclude: (?x)^(payment-api/src/migrations/.* | payment-api/src/core/grpc/.* | src/services/grpc/.*| auth_service/src/migrations/.* | auth_service/src/migrations/.* | payment-api/src/migrations/.* | subscription-api/src/core/grpc/.* | subscription-api/src/migrations/.*   )$
 -   repo: https://github.com/timothycrosley/isort
     rev: 5.12.0
     hooks:
