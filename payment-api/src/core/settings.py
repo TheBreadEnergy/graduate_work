@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     jwt_secret: str = Field("secret", alias="JWT_SECRET")
     jwt_algorithm: str = Field("HS256", alias="JWT_METHOD")
     grpc_port: int = Field(50051, alias="GRPC_PORT")
+    enable_tracer: bool = Field(False, alias="ENABLE_TRACER")
 
 
 settings = Settings()

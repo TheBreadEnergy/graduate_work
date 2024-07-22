@@ -1,16 +1,19 @@
 from contextlib import asynccontextmanager
+from http import HTTPStatus
 
 import uvicorn
 from aiokafka import AIOKafkaProducer
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from fastapi_pagination import add_pagination
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
 from src import cache
 from src.api import healthcheck
 from src.api.v1 import event, payments, refunds, wallets
 from src.cache import redis
 from src.core.settings import settings
+from src.core.tracing import configure_tracing
 from src.dependencies.main import setup_dependencies
 from src.exceptions.base import BaseApplicationException
 from src.middlewares.main import setup_middleware
@@ -44,6 +47,22 @@ def create_application() -> FastAPI:
         version=settings.version,
         lifespan=lifespan,
     )
+
+    if settings.enable_tracer:
+        configure_tracing()
+
+        @app.middleware("http")
+        async def before_request(request: Request, call_next):
+            response = await call_next(request)
+            request_id = request.headers.get("X-Request-Id")
+            if not request_id:
+                return ORJSONResponse(
+                    status_code=HTTPStatus.NOT_FOUND,
+                    content={"detail": "X-Request-Id is required"},
+                )
+            return response
+
+        FastAPIInstrumentor.instrument_app(app)
 
     @app.exception_handler(BaseApplicationException)
     def exception_handler(_: Request, exc: BaseApplicationException):
