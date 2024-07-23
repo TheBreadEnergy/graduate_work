@@ -73,7 +73,7 @@ services:
         - subscription-db
         - subscription-cache
       env_file:
-        - envs/prod/.env.api.subscription
+        - envs/prod/.env.api.subscriptions
       environment:
         - RUN_MODE=HTTP
       ports:
@@ -88,7 +88,7 @@ services:
         - subscription-db
         - subscription-cache
       env_file:
-        - envs/prod/.env.api.subscription
+        - envs/prod/.env.api.subscriptions
       environment:
         - RUN_MODE=GRPC
       ports:
