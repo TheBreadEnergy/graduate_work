@@ -65,7 +65,7 @@ services:
       - "50051:50051"
     restart: unless-stopped
 
-    subscription-api:
+  subscription-api:
       <<: *api-common
       build: subscription-api
       image: subscription-api-http:dev
@@ -81,7 +81,7 @@ services:
       restart: unless-stopped
 
 
-    subscription-api-grpc:
+  subscription-api-grpc:
       build: subscription-api
       image: subscription-api-grpc:dev
       depends_on:
