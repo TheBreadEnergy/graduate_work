@@ -110,8 +110,6 @@ services:
     volumes:
       - auth-data:/var/lib/postgresql/data
 
-
-
   payment-cache:
     image: redis:latest
     restart: unless-stopped
@@ -138,6 +136,16 @@ services:
       - ./envs/prod/.env.database.subscription
     volumes:
       - subscription-data:/var/lib/postgresql/data
+
+  elastic:
+    build: elastic/
+    image: app-elasticsearch:dev
+    restart: unless-stopped
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
 
   jaeger-collector:
     image: jaegertracing/jaeger-collector:latest
@@ -172,3 +180,4 @@ volumes:
   payment-cache:
   subscription-data:
   subscription-cache:
+  elastic-data:
