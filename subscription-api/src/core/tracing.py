@@ -8,7 +8,7 @@ from src.core.settings import settings
 
 def configure_tracing() -> None:
     collector_endpoint = f"{settings.jaeger_agent_host}:{settings.jaeger_agent_port}"
-    resource = Resource(attributes={"service.name": "auth-service"})
+    resource = Resource(attributes={"service.name": "subscription-service"})
     trace.set_tracer_provider(TracerProvider(resource=resource))
     trace.get_tracer_provider().add_span_processor(
         BatchSpanProcessor(
