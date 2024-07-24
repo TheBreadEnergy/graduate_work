@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+
+message SubscriptionPaymentRequest {
+  string subscription_id = 1;
+  string account_id = 2;
+  optional string wallet_id = 3;
+  string subscription_name = 4;
+  double price = 5;
+  string currency = 6;
+}
+
+message BatchSubscriptionPaymentRequest {
+  repeated SubscriptionPaymentRequest requests = 1;
+}
+
+message SubscriptionPaymentResponse {
+  string status = 1;
+  optional string reason = 3;
+}
+
+message BatchSubscriptionPaymentResponse {
+  repeated SubscriptionPaymentResponse responses = 1;
+}
+
+
+service PaymentManager {
+  rpc Pay (SubscriptionPaymentRequest) returns (SubscriptionPaymentResponse) {}
+  rpc PayBatch (BatchSubscriptionPaymentRequest) returns (BatchSubscriptionPaymentResponse) {}
+}
