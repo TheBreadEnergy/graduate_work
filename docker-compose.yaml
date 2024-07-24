@@ -1,0 +1,183 @@
+x-api-common:
+  &api-common
+  healthcheck:
+    test: curl --header X-Request-Id:1 --fail http://localhost:8000/healthcheck || exit 1
+    interval: 10s
+    retries: 10
+    start_period: 10s
+    timeout: 10s
+
+
+
+services:
+  proxy:
+    build: nginx
+    image: payment-nginx:dev
+    depends_on:
+      auth-api:
+        condition: service_healthy
+      payment-api:
+        condition: service_healthy
+    ports:
+      - "81:80"
+      - "443:443"
+    restart: unless-stopped
+
+  auth-api:
+    <<: *api-common
+    build: auth_service
+    image: app-auth-api:dev
+    depends_on:
+      - redis-auth
+      - postgres-auth
+    env_file:
+      - envs/prod/.env.api.auth
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+
+  payment-api:
+    <<: *api-common
+    build: payment-api
+    image: payment-api-http:dev
+    depends_on:
+      - payment-cache
+      - payment-db
+    env_file:
+      - envs/prod/.env.payment.api
+    environment:
+      - RUN_MODE=HTTP
+    ports:
+      - "8002:8000"
+    restart: unless-stopped
+
+  payment-api-grpc:
+    build: payment-api
+    image: payment-api-grpc:dev
+    depends_on:
+      - payment-cache
+      - payment-db
+    env_file:
+      - envs/prod/.env.payment.api
+    environment:
+      - RUN_MODE=GRPC
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+
+  subscription-api:
+      <<: *api-common
+      build: subscription-api
+      image: subscription-api-http:dev
+      depends_on:
+        - subscription-db
+        - subscription-cache
+      env_file:
+        - envs/prod/.env.api.subscriptions
+      environment:
+        - RUN_MODE=HTTP
+      ports:
+        - "8003:8000"
+      restart: unless-stopped
+
+
+  subscription-api-grpc:
+      build: subscription-api
+      image: subscription-api-grpc:dev
+      depends_on:
+        - subscription-db
+        - subscription-cache
+      env_file:
+        - envs/prod/.env.api.subscriptions
+      environment:
+        - RUN_MODE=GRPC
+      ports:
+        - "50052:50051"
+      restart: unless-stopped
+
+
+  redis-auth:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - auth-cache:/data
+
+
+  postgres-auth:
+    image: postgres:latest
+    env_file:
+      - ./envs/prod/.env.database.auth
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+
+  payment-cache:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - payment-cache:/data
+
+  payment-db:
+    image: postgres:latest
+    env_file:
+      - ./envs/prod/.env.database.payment
+    volumes:
+      - payment-data:/var/lib/postgresql/data
+
+
+  subscription-cache:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - subscription-cache:/data
+
+  subscription-db:
+    image: postgres:latest
+    env_file:
+      - ./envs/prod/.env.database.subscription
+    volumes:
+      - subscription-data:/var/lib/postgresql/data
+
+  elastic:
+    build: elastic/
+    image: app-elasticsearch:dev
+    restart: unless-stopped
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+
+  jaeger-collector:
+    image: jaegertracing/jaeger-collector:latest
+    environment:
+      SPAN_STORAGE_TYPE: elasticsearch
+      ES_SERVER_URLS: http://elastic-logs:9200
+    ports:
+      - "14250:14250"
+      - "14267:14267"
+      - "14268:14268"
+      - "9411:9411"
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      - elastic
+    restart: unless-stopped
+
+  jaeger-query:
+    image: jaegertracing/jaeger-query:latest
+    ports:
+      - "16686:16686"
+      - "16687:16687"
+    environment:
+      SPAN_STORAGE_TYPE: elasticsearch
+      ES_SERVER_URLS: http://elastic-logs:9200
+    restart: unless-stopped
+
+volumes:
+  auth-data:
+  auth-cache:
+  payment-data:
+  payment-cache:
+  subscription-data:
+  subscription-cache:
+  elastic-data:

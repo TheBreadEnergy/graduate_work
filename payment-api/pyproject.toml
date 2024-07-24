@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = ""
+authors = ["Samir Akhmed <warrior.owl@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+uvicorn = "^0.30.1"
+pydantic-settings = "^2.3.4"
+sqlalchemy = "^2.0.31"
+asyncpg = "^0.29.0"
+alembic = "^1.13.2"
+redis = "^5.0.7"
+yookassa = "^3.3.0"
+backoff = "^2.2.1"
+fastapi-pagination = "^0.12.26"
+isort = "^5.13.2"
+aiokafka = "^0.11.0"
+python-jose = "^3.3.0"
+gunicorn = "^22.0.0"
+opentelemetry-exporter-jaeger-proto-grpc = "^1.21.0"
+opentelemetry-instrumentation-fastapi = "^0.46b0"
+grpcio = "1.65.1"
+orjson = "^3.10.6"
+protobuf = "3.20.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

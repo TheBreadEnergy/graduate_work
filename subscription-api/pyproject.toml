@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "subscription-api"
+version = "0.1.0"
+description = ""
+authors = ["Samir Akhmed <warrior.owl@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.1"
+protobuf = "3.20.3"
+uvicorn = "^0.30.3"
+gunicorn = "^22.0.0"
+asyncpg = "^0.29.0"
+alembic = "^1.13.2"
+redis = "^5.0.7"
+pydantic-settings = "^2.3.4"
+backoff = "^2.2.1"
+aiohttp = "^3.9.5"
+circuitbreaker = "^2.0.0"
+fastapi-pagination = "^0.12.26"
+orjson = "^3.10.6"
+opentelemetry-exporter-jaeger-proto-grpc = "^1.21.0"
+opentelemetry-instrumentation-fastapi = "^0.46b0"
+grpcio = "1.65.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
