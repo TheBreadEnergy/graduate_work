@@ -22,7 +22,7 @@ async def serve() -> None:
         logging.info("Server ready to receive requests...")
         await server.wait_for_termination()
     finally:
-        await server.stop()
+        await server.stop(grace=None)
 
 
 if __name__ == "__main__":
