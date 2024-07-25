@@ -6,4 +6,4 @@ class Currency(Enum):
 
 
 class PaymentMethod(Enum):
-    bank_card = "BANK_CARD"
+    bank_card = "bank_card"
