@@ -4,6 +4,7 @@ from uuid import UUID
 from src.core.pagination import PaginatedPage
 from src.enums.payment import PaymentStatus
 from src.exceptions.payment import PaymentNotFoundException
+from src.exceptions.refund import RefundNotFoundException
 from src.models.domain.refund import Refund
 from src.models.events.refund import RefundCreatedEvent
 from src.repositories.refunds import RefundRepositoryABC
@@ -31,7 +32,10 @@ class RefundQueryService(RefundQueryServiceABC):
         return await self._refund_repository.gets(account_id=account_id)
 
     async def get(self, *, refund_id: UUID) -> Refund:
-        return await self._refund_repository.get(entity_id=refund_id)
+        refund = await self._refund_repository.get(entity_id=refund_id)
+        if not refund:
+            raise RefundNotFoundException()
+        return refund
 
     async def filter_by_status(self, status: PaymentStatus) -> PaginatedPage[Refund]:
         return await self._refund_repository.filter_by_status(status=status)
@@ -68,7 +72,7 @@ class RefundService(RefundServiceABC):
                 status=status.status,
                 reason=status.reason,
             )
-            refund = self._uow.refund_repository.insert(data=refund_obj)
+            refund = await self._uow.refund_repository.insert(data=refund_obj)
             await self._uow.commit()
         refund_event = RefundCreatedEvent(
             refund_id=refund.id,

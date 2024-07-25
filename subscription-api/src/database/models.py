@@ -53,6 +53,11 @@ user_subscription_table = Table(
     Column("active", sqlalchemy.BOOLEAN, nullable=False),
     Column("last_notified", sqlalchemy.DateTime(timezone=True), default=date_factory),
     Column("last_payed", sqlalchemy.DateTime(timezone=True), default=date_factory),
+    Column(
+        "created",
+        sqlalchemy.DateTime(timezone=True),
+        default=date_factory,
+    ),
 )
 
 

@@ -72,10 +72,10 @@ async def make_payment(
         subscription_id=payment_data.subscription_id,
         subscription_name=payment_data.subscription_name,
         price=payment_data.price,
-        currency=payment_data.currency,
+        currency=str(payment_data.currency),
         account_id=user,
         save_payment_method=payment_data.save_payment_method,
-        payment_method=payment_data.payment_method,
+        payment_method=str(payment_data.payment_method),
     )
     if operation_response.status == PaymentStatus.cancelled:
         raise HTTPException(

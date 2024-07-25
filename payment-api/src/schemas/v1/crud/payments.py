@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 from src.models.domain.payment import PaymentStatus
+from src.schemas.v1.crud.enums import Currency, PaymentMethod
 
 
 class PaymentSchema(BaseModel):
@@ -33,9 +34,9 @@ class PaymentOperationSchema(BaseModel):
     subscription_id: UUID
     subscription_name: str
     price: decimal.Decimal
-    currency: str
+    currency: Currency
     save_payment_method: bool
-    payment_method: str
+    payment_method: PaymentMethod
 
 
 class PaymentStatusSchema(BaseModel):

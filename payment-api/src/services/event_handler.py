@@ -1,7 +1,6 @@
 import json
 from abc import ABC, abstractmethod
 
-from aiokafka import AIOKafkaProducer
 from fastapi.encoders import jsonable_encoder
 from src.core.settings import settings
 from src.models.events.payment import (
@@ -16,6 +15,7 @@ from src.models.events.refund import (
     RefundEventABC,
     RefundSuccessEvent,
 )
+from src.producers.producer import ProducerABC
 
 
 class EventHandlerABC(ABC):
@@ -29,14 +29,14 @@ class EventHandlerABC(ABC):
 
 
 class KafkaEventHandler(EventHandlerABC):
-    def __init__(self, kafka_producer: AIOKafkaProducer):
+    def __init__(self, kafka_producer: ProducerABC):
         self._producer = kafka_producer
 
     async def handle_payment_event(self, event: PaymentEventABC):
         topic = self._get_topic_for_payment(event)
         await self._producer.send(
             topic=topic,
-            value=json.dumps(jsonable_encoder(event)).encode(),
+            message=json.dumps(jsonable_encoder(event)).encode(),
             key=str(event.payment_id).encode(),
         )
 
@@ -44,7 +44,7 @@ class KafkaEventHandler(EventHandlerABC):
         topic = self._get_topic_for_refund(event)
         await self._producer.send(
             topic=topic,
-            value=json.dumps(jsonable_encoder(event)).encode(),
+            message=json.dumps(jsonable_encoder(event)).encode(),
             key=str(event.refund_id).encode(),
         )
 

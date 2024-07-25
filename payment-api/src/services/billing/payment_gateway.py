@@ -178,7 +178,7 @@ class MockPaymentGateway(PaymentGatewayABC):
             status=PaymentStatus.success,
             redirection_url="",
             reason=None,
-            payment_method=(
+            payment_information=(
                 PayMethod(title="Mock payment", payment_id=uuid.uuid4())
                 if payment_data.save_payment_method
                 else None
@@ -196,11 +196,11 @@ class MockPaymentGateway(PaymentGatewayABC):
         self, payment_id: UUID, idempotency_key: UUID | None = None
     ) -> PayStatusSchema:
         return PayStatusSchema(
-            payment_id=payment_id,
+            payment_id=str(payment_id),
             status=PaymentStatus.cancelled,
             redirection_url=None,
             reason=None,
-            payment_method=None,
+            payment_information=None,
         )
 
 

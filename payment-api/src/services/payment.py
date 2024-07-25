@@ -14,7 +14,6 @@ from src.schemas.v1.crud.payments import PaymentCreateSchema
 from src.schemas.v1.crud.wallets import WalletCreateSchema
 from src.services.billing.payment_gateway import PaymentGatewayABC, process_payment
 from src.services.event_handler import EventHandlerABC
-from src.services.subscription import SubscriptionManagerABC
 from src.services.uow import UnitOfWorkABC
 
 
@@ -77,13 +76,11 @@ class PaymentService(PaymentServiceABC):
         self,
         payment_gateway: PaymentGatewayABC,
         event_hander: EventHandlerABC,
-        subscription_manager: SubscriptionManagerABC,
         uow: UnitOfWorkABC,
     ):
         self._uow = uow
         self._gateway = payment_gateway
         self._handler = event_hander
-        self._subscription_service = subscription_manager
 
     async def make_payment(
         self,
