@@ -13,5 +13,4 @@ class PaymentCancelledEvent(PaymentEventABC):
     reason: str
 
 
-class PaymentSuccessEvent(PaymentEventABC):
-    ...
+class PaymentSuccessEvent(PaymentEventABC): ...

@@ -11,9 +11,10 @@ from kafka.errors import (
     NoBrokersAvailable,
     TopicAlreadyExistsError,
 )
+
 from src.broker.base import AbstractKafkaClient
 from src.core.config import settings
-from src.database.postgres import get_session
+from src.database.postgres import async_session_payments, get_session
 from src.handlers.event_handler import KafkaEventHandler
 from src.schemas.events.payment import PaymentCancelledEvent, PaymentSuccessEvent
 from src.schemas.events.refund import RefundSuccessEvent
@@ -93,7 +94,7 @@ class KafkaClient(AbstractKafkaClient):
 
     async def process_message(self, msg):
         event_data = msg.value
-        async for db in get_session():
+        async for db in get_session(async_session_payments):
             handler = KafkaEventHandler()
             if msg.topic == settings.payment_success_topic:
                 event = PaymentSuccessEvent(**event_data)

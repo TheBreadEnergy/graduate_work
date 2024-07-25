@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import DECIMAL, TEXT, Column, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID as UUIDType
+
 from src.database.base import Base
 from src.enums.payment import PaymentStatus
 
