@@ -1,0 +1,184 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-26 01:01+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: app/billing/apps.py:8
+#, fuzzy
+msgid "Billing"
+msgstr "Биллинг"
+
+#: app/billing/models/payments.py:7 app/billing/models/payments.py:55
+#: app/billing/models/payments.py:71 app/billing/models/subscriptions.py:14
+#: app/billing/models/subscriptions.py:34
+msgid "created"
+msgstr "создан"
+
+#: app/billing/models/payments.py:8
+msgid "pending"
+msgstr "в ожидании"
+
+#: app/billing/models/payments.py:9
+msgid "succeeded"
+msgstr "успешно"
+
+#: app/billing/models/payments.py:10
+msgid "cancelled"
+msgstr "отменен"
+
+#: app/billing/models/payments.py:11
+msgid "waiting_for_capture"
+msgstr "ожидание подтверждения"
+
+#: app/billing/models/payments.py:15 app/billing/models/payments.py:45
+msgid "payment id"
+msgstr "id платежа"
+
+#: app/billing/models/payments.py:17 app/billing/models/payments.py:46
+#: app/billing/models/subscriptions.py:9
+msgid "description"
+msgstr "описание"
+
+#: app/billing/models/payments.py:18 app/billing/models/subscriptions.py:13
+#: app/billing/models/subscriptions.py:29
+msgid "currency"
+msgstr "валюта"
+
+#: app/billing/models/payments.py:19 app/billing/models/payments.py:47
+#: app/billing/models/payments.py:67
+msgid "account id"
+msgstr "id аккаунта"
+
+#: app/billing/models/payments.py:20 app/billing/models/subscriptions.py:27
+msgid "subscription id"
+msgstr "id подписки"
+
+#: app/billing/models/payments.py:22 app/billing/models/subscriptions.py:12
+#: app/billing/models/subscriptions.py:28
+msgid "price"
+msgstr "цена"
+
+#: app/billing/models/payments.py:27 app/billing/models/payments.py:49
+msgid "status"
+msgstr "статус"
+
+#: app/billing/models/payments.py:35
+msgid "Payment"
+msgstr "Платеж"
+
+#: app/billing/models/payments.py:36
+msgid "Payments"
+msgstr "Платежи"
+
+#: app/billing/models/payments.py:53
+msgid "money"
+msgstr "деньги"
+
+#: app/billing/models/payments.py:54
+msgid "reason"
+msgstr "причина"
+
+#: app/billing/models/payments.py:58
+msgid "Refund"
+msgstr "Возврат"
+
+#: app/billing/models/payments.py:59
+msgid "Refunds"
+msgstr "Возвраты"
+
+#: app/billing/models/payments.py:68
+msgid "payment method id"
+msgstr "id метода оплаты"
+
+#: app/billing/models/payments.py:69
+msgid "reccurent payment"
+msgstr "повторный платеж"
+
+#: app/billing/models/payments.py:70
+msgid "title"
+msgstr "название"
+
+#: app/billing/models/payments.py:72
+msgid "preffered"
+msgstr "предпочтительный"
+
+#: app/billing/models/payments.py:75
+msgid "Wallet"
+msgstr "Кошелек"
+
+#: app/billing/models/payments.py:76
+msgid "Wallets"
+msgstr "Кошельки"
+
+#: app/billing/models/subscriptions.py:8
+msgid "name"
+msgstr "имя"
+
+#: app/billing/models/subscriptions.py:10
+msgid "tier"
+msgstr "уровень"
+
+#: app/billing/models/subscriptions.py:11
+msgid "code"
+msgstr "код"
+
+#: app/billing/models/subscriptions.py:17
+msgid "Subscription"
+msgstr "Подписка"
+
+#: app/billing/models/subscriptions.py:18
+msgid "Subscriptions"
+msgstr "Подписки"
+
+#: app/billing/models/subscriptions.py:26
+msgid "user id"
+msgstr "id пользователя"
+
+#: app/billing/models/subscriptions.py:30
+msgid "promo id"
+msgstr "id промо"
+
+#: app/billing/models/subscriptions.py:31
+msgid "active"
+msgstr "активный"
+
+#: app/billing/models/subscriptions.py:32
+msgid "last notified"
+msgstr "последнее уведомление"
+
+#: app/billing/models/subscriptions.py:33
+msgid "last payed"
+msgstr "последняя оплата"
+
+#: app/billing/models/subscriptions.py:37
+msgid "User Subscription"
+msgstr "Подписка пользователя"
+
+#: app/billing/models/subscriptions.py:38
+msgid "User Subscriptions"
+msgstr "Подписки пользователя"
+
+#: app/billing/models/user.py:43
+msgid "User"
+msgstr "Пользователь"
+
+#: app/billing/models/user.py:44
+msgid "Users"
+msgstr "Пользователи"
