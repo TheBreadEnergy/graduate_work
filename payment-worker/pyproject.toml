@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "payment-worker"
+version = "1.0.0"
+description = "payment-worker"
+authors = ["TheBreadEnergy <thebreadenergy@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aio-pika = "^9.4.2"
+asyncpg = "^0.29.0"
+backoff = "^2.2.1"
+greenlet = "^3.0.3"
+kafka-python-ng = "^2.2.2"
+pydantic = "^2.8.2"
+pydantic-settings = "^2.3.4"
+sqlalchemy = "^2.0.31"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
+flake8 = "^7.1.0"
+flake8-isort = "^6.1.1"
+pre-commit = "^3.7.1"
+pytest = "^8.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
