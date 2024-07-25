@@ -21,7 +21,6 @@ from src.services.payment import (
     PaymentService,
     PaymentServiceABC,
 )
-from src.services.subscription import SubscriptionManagerABC
 from src.services.uow import SqlAlchemyUnitOfWork
 
 
@@ -51,11 +50,9 @@ def create_payment_service(
     session: AsyncSession = Depends(get_session),
     payment_gateway: PaymentGatewayABC = Depends(),
     event_handler: EventHandlerABC = Depends(),
-    subscription_manager: SubscriptionManagerABC = Depends(),
 ) -> PaymentService:
     return PaymentService(
         payment_gateway=payment_gateway,
         event_hander=event_handler,
-        subscription_manager=subscription_manager,
         uow=SqlAlchemyUnitOfWork(session=session),
     )
