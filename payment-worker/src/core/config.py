@@ -5,11 +5,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", env_file=".env")
 
-    database_conn: PostgresDsn = Field(
+    database_conn_payments: PostgresDsn = Field(
         "postgresql+asyncpg://app:123qwe@localhost:5432/payments",
         alias="DATABASE_CONN",
         env="DATABASE_CONN",
     )
+
+    database_conn_subscriptions: PostgresDsn = Field(
+        "postgresql+asyncpg://app:123qwe@localhost:5431/subscriptions",
+        alias="DATABASE_CONN",
+        env="DATABASE_CONN",
+    )
+
     echo: bool = Field(False, alias="ECHO")
 
     kafka_broker_host: str = Field("109.71.244.113:9094", alias="KAFKA_BROKER_HOST")
