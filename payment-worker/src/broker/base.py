@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from core.logging import setup_logger
+from src.core.logging import setup_logger
 
 
 class AbstractKafkaClient(ABC):
@@ -13,4 +13,20 @@ class AbstractKafkaClient(ABC):
 
     @abstractmethod
     def consume_messages(self):
+        ...
+
+
+class MessageBrokerABC(ABC):
+    @abstractmethod
+    async def startup(self) -> None:
+        ...
+
+    @abstractmethod
+    async def shutdown(self) -> None:
+        ...
+
+    @abstractmethod
+    async def publish(
+        self, message: bytes, routing_key: str, content_type: str
+    ) -> None:
         ...

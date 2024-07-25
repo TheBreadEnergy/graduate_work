@@ -9,13 +9,9 @@ class PaymentEventABC(BaseModel):
     created_at: datetime.datetime
 
 
-class PaymentCreatedEvent(PaymentEventABC):
-    user_id: UUID
-    license_id: UUID
-
-
-class PaymentCanceledEvent(PaymentEventABC):
+class PaymentCancelledEvent(PaymentEventABC):
     reason: str
 
 
-class PaymentSuccessEvent(PaymentEventABC): ...
+class PaymentSuccessEvent(PaymentEventABC):
+    ...
