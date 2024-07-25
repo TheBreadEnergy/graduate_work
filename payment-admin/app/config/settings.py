@@ -18,6 +18,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 AUTH_API_LOGIN_URL = os.environ.get("AUTH_API_LOGIN_URL")
 AUTH_API_PROFILE_URL = os.environ.get("AUTH_API_PROFILE_URL")
 
+SSL_CERT_PATH = os.environ.get("SSL_CERT_PATH")
+
 BACKOFF_MAX_RETRIES = os.environ.get("BACKOFF_MAX_RETRIES") or 6
 
 ALLOWED_HOSTS = (

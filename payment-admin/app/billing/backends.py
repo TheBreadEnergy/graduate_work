@@ -20,8 +20,13 @@ class CustomBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None):
         auth_url = settings.AUTH_API_LOGIN_URL
         profile_url = settings.AUTH_API_PROFILE_URL
+        ssl_cert = settings.SSL_CERT_PATH
         payload = {"login": username, "password": password}
-        response = requests.post(auth_url, data=json.dumps(payload), verify=False)
+        response = requests.post(
+            auth_url,
+            data=json.dumps(payload),
+            verify=ssl_cert,
+        )
         print(response.status_code)
         if response.status_code != http.HTTPStatus.OK:
             return None
@@ -29,7 +34,11 @@ class CustomBackend(BaseBackend):
         data = response.json()
         token = data["access_token"]
         headers = {"Authorization": f"Bearer {token}"}
-        response = requests.get(profile_url, headers=headers, verify=False)
+        response = requests.get(
+            profile_url,
+            headers=headers,
+            verify=ssl_cert,
+        )
         if response.status_code != http.HTTPStatus.OK:
             return None
         data = response.json()

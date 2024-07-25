@@ -209,6 +209,7 @@ services:
       - "8000"
     volumes:
       - payment-admin-static:/opt/app/static
+      - ./nginx/ssl:/opt/app/ssl
     restart: unless-stopped
 
   payment-admin-db:
