@@ -176,26 +176,24 @@ services:
   worker-0:
     container_name: worker-0
     build: ./payment-worker
-    env_file:
-      - envs/.env.worker
     environment:
       - WORKER_ID=worker-0
 
   worker-1:
     container_name: worker-1
     build: ./payment-worker
-    env_file:
-      - envs/.env.worker
     environment:
       - WORKER_ID=worker-1
 
   worker-2:
     container_name: worker-2
     build: ./payment-worker
-    env_file:
-      - envs/.env.worker
     environment:
       - WORKER_ID=worker-2
+
+  subscription-scheduler:
+    container_name: subscription-scheduler
+    build: ./subscription-scheduler
 
 volumes:
   auth-data:
