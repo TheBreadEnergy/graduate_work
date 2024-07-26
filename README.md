@@ -122,5 +122,6 @@ c их python [SDK](https://git.yoomoney.ru/projects/SDK/repos/yookassa-sdk-pyth
 - /api/subscriptions/openapi - OpenAPI сервиса подписок
 - /api/payments/openapi - OpenAPI сервиса платежей
 - /payment-admin  - Административная панель Django. Логин/пароль: super/password
+
 При переходе по 81 порту вас перенаправит на 443 порт
 4. Остановить программу можно с помощью команды <code> make stop </code> или <code> docker compose down </code>
