@@ -18,6 +18,8 @@ services:
         condition: service_healthy
       payment-api:
         condition: service_healthy
+    volumes:
+      - payment-admin-static:/data/static/:ro
     ports:
       - "81:80"
       - "443:443"
@@ -197,6 +199,26 @@ services:
     environment:
       - WORKER_ID=worker-2
 
+  payment-admin:
+    build: payment-admin
+    depends_on:
+      - payment-admin-db
+    env_file:
+      - ./envs/prod/.env.payment.admin
+    expose:
+      - "8000"
+    volumes:
+      - payment-admin-static:/opt/app/static
+      - ./nginx/ssl:/opt/app/ssl
+    restart: unless-stopped
+
+  payment-admin-db:
+    build: payment-admin/postgres/
+    env_file:
+      - envs/prod/.env.database.payment-admin
+    volumes:
+      - payment-admin-data:/var/lib/postgresql/data
+
 volumes:
   auth-data:
   auth-cache:
@@ -205,3 +227,5 @@ volumes:
   subscription-data:
   subscription-cache:
   elastic-data:
+  payment-admin-static:
+  payment-admin-data:
