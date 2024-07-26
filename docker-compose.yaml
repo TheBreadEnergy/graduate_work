@@ -33,7 +33,7 @@ services:
       - redis-auth
       - postgres-auth
     env_file:
-      - envs/prod/.env.api.auth
+      - envs/prod/.env.api.auth.example
     ports:
       - "8001:8000"
     restart: unless-stopped
@@ -46,7 +46,7 @@ services:
       - payment-cache
       - payment-db
     env_file:
-      - envs/prod/.env.payment.api
+      - envs/prod/.env.payment.api.example
     environment:
       - RUN_MODE=HTTP
     ports:
@@ -60,7 +60,7 @@ services:
       - payment-cache
       - payment-db
     env_file:
-      - envs/prod/.env.payment.api
+      - envs/prod/.env.payment.api.example
     environment:
       - RUN_MODE=GRPC
     ports:
@@ -75,7 +75,7 @@ services:
         - subscription-db
         - subscription-cache
       env_file:
-        - envs/prod/.env.api.subscriptions
+        - envs/prod/.env.api.subscriptions.example
       environment:
         - RUN_MODE=HTTP
       ports:
@@ -90,7 +90,7 @@ services:
         - subscription-db
         - subscription-cache
       env_file:
-        - envs/prod/.env.api.subscriptions
+        - envs/prod/.env.api.subscriptions.example
       environment:
         - RUN_MODE=GRPC
       ports:
@@ -108,7 +108,7 @@ services:
   postgres-auth:
     image: postgres:latest
     env_file:
-      - ./envs/prod/.env.database.auth
+      - envs/prod/.env.database.auth.example
     volumes:
       - auth-data:/var/lib/postgresql/data
 
@@ -121,7 +121,7 @@ services:
   payment-db:
     image: postgres:latest
     env_file:
-      - ./envs/prod/.env.database.payment
+      - envs/prod/.env.database.payment.example
     volumes:
       - payment-data:/var/lib/postgresql/data
 
@@ -135,7 +135,7 @@ services:
   subscription-db:
     image: postgres:latest
     env_file:
-      - ./envs/prod/.env.database.subscription
+      - envs/prod/.env.database.subscription.example
     volumes:
       - subscription-data:/var/lib/postgresql/data
 
@@ -202,7 +202,7 @@ services:
     depends_on:
       - payment-admin-db
     env_file:
-      - ./envs/prod/.env.payment.admin
+      - envs/prod/.env.payment.admin.example
     expose:
       - "8000"
     volumes:
@@ -213,7 +213,7 @@ services:
   payment-admin-db:
     build: payment-admin/postgres/
     env_file:
-      - envs/prod/.env.database.payment-admin
+      - envs/prod/.env.database.payment-admin.example
     volumes:
       - payment-admin-data:/var/lib/postgresql/data
 
