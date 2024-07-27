@@ -71,7 +71,8 @@ class UserSubscriptionsRepository(
 class CachedUserSubscriptionsRepository(UserSubscriptionsRepositoryABC):
     """
     Конкретная реализация интерфейса UserSubscriptionsRepositoryABC с добавлением функциональности кеширования.
-    Является декоратором над репозиторием реализующим UserSubscriptionRepositoryABC (UserSubscriptionRepository)
+    Является декоратором над репозиторием реализующим UserSubscriptionRepositoryABC и RepositoryABC
+    (UserSubscriptionRepository)
     """
 
     def __init__(self, repo: UserSubscriptionsRepositoryABC, cache: CacheClientABC):
