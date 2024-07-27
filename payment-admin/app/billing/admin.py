@@ -3,7 +3,7 @@ from billing.models import (Payment, Refund, Subscription, UserSubscription,
 from django.contrib import admin
 
 
-@admin.register(Payment, site=admin.site)
+@admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -27,7 +27,7 @@ class PaymentAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(Refund, site=admin.site)
+@admin.register(Refund)
 class RefundAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -43,7 +43,7 @@ class RefundAdmin(admin.ModelAdmin):
     search_fields = ("payment_id", "description", "account_id")
 
 
-@admin.register(Wallet, site=admin.site)
+@admin.register(Wallet)
 class WalletAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -58,7 +58,7 @@ class WalletAdmin(admin.ModelAdmin):
     search_fields = ("account_id", "payment_method_id", "title")
 
 
-@admin.register(Subscription, site=admin.site)
+@admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -74,7 +74,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ("name", "description", "code")
 
 
-@admin.register(UserSubscription, site=admin.site)
+@admin.register(UserSubscription)
 class UserSubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
