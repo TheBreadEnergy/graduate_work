@@ -16,11 +16,13 @@ from src.services.uow import UnitOfWorkABC
 
 class RefundQueryServiceABC(ABC):
     @abstractmethod
-    async def gets(self, *, account_id: UUID) -> PaginatedPage[Refund]:
+    async def get_refunds_for_account(
+        self, *, account_id: UUID
+    ) -> PaginatedPage[Refund]:
         ...
 
     @abstractmethod
-    async def get(self, *, refund_id: UUID) -> Refund:
+    async def get_refund(self, *, refund_id: UUID) -> Refund:
         ...
 
 
@@ -28,10 +30,12 @@ class RefundQueryService(RefundQueryServiceABC):
     def __init__(self, refund_repository: RefundRepositoryABC):
         self._refund_repository = refund_repository
 
-    async def gets(self, *, account_id: UUID) -> PaginatedPage[Refund]:
+    async def get_refunds_for_account(
+        self, *, account_id: UUID
+    ) -> PaginatedPage[Refund]:
         return await self._refund_repository.gets(account_id=account_id)
 
-    async def get(self, *, refund_id: UUID) -> Refund:
+    async def get_refund(self, *, refund_id: UUID) -> Refund:
         refund = await self._refund_repository.get(entity_id=refund_id)
         if not refund:
             raise RefundNotFoundException()

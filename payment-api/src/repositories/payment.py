@@ -16,6 +16,13 @@ from src.schemas.v1.crud.payments import PaymentCreateSchema
 
 
 class PaymentRepositoryABC(RepositoryABC):
+    """
+    Интерфейс репозитория для пользовательских оплат.
+    Нужен для спецификации базового интерфейса. Наследуется и расширяет интерфейс RepositoryABC добавляя методы
+    payment_by_external_id, для получения оплат по внешнему идентификатору и filter_by_status для получения
+    фильтрованного списка пользовательских оплат по статусу
+    """
+
     @abstractmethod
     async def payment_by_external_id(self, *, payment_id: UUID) -> Payment | None:
         ...
@@ -30,6 +37,12 @@ class PaymentRepositoryABC(RepositoryABC):
 class PaymentRepository(
     PaymentRepositoryABC, SqlAlchemyRepository[Payment, PaymentCreateSchema]
 ):
+    """
+    Конкретная реализация интерфейса PaymentRepositoryABC.
+    Реaлизация методов репозитория наследуется от конкретного  специфицированного шаблонного класса
+    SqlAlchemyRepository, добавляя реализацию методов специфичных для PaymentRepositoryABC
+    """
+
     def __init__(self, session: AsyncSession):
         super().__init__(session=session, model=Payment, table=payments_table)
 
@@ -47,6 +60,11 @@ class PaymentRepository(
 
 
 class CachedPaymentRepository(PaymentRepositoryABC):
+    """
+    Конкретная реализация интерфейса PaymentRepositoryABC с добавлением функциональности кеширования.
+    Является декоратором над репозиторием реализующим PaymentRepositoryABC (PaymentRepository)
+    """
+
     def __init__(self, repo: PaymentRepositoryABC, cache: CacheClientABC):  # noqa
         self._repo = repo
         self._cache = cache

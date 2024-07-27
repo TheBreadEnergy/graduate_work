@@ -16,6 +16,11 @@ CreateModelType = TypeVar("CreateModelType", bound=BaseModel)
 
 
 class RepositoryABC(ABC):
+    """
+    Базовый интерфейс для репозиториев.
+    Здесь перечислены базовые операции которые должны реализовывать все репозитории
+    """
+
     @abstractmethod
     def gets(self, *args, **kwargs):
         ...
@@ -34,6 +39,11 @@ class RepositoryABC(ABC):
 
 
 class SqlAlchemyRepository(RepositoryABC, Generic[ModelType, CreateModelType]):
+    """
+    Конретная реализация интерфейса RepositoryABC для ORM sqlalchemy.
+    Определяет реализации методов по умолчанию
+    """
+
     def __init__(self, session: AsyncSession, model: Type[ModelType], table: Table):
         self._session = session
         self._model = model
