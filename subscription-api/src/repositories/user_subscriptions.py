@@ -13,6 +13,13 @@ from src.schemas.v1.user_subscription import UserSubscriptionCreateSchema
 
 
 class UserSubscriptionsRepositoryABC(RepositoryABC, ABC):
+    """
+    Интерфейс репозитория для пользовательских подписок.
+    Нужен для спецификации базового интерфейса. Наследуется и расширяет интерфейс RepositoryABC добавляя методы
+    get_user_subscriptions, для получения подписок конкретного пользователя  и get_filtered_subscriptions для получения
+    фильтрованного списка пользовательских подписок по активности
+    """
+
     @abstractmethod
     async def get_user_subscriptions(
         self, *, user_id: UUID, active: bool | None = None
@@ -30,6 +37,12 @@ class UserSubscriptionsRepository(
     UserSubscriptionsRepositoryABC,
     SqlAlchemyRepository[UserSubscription, UserSubscriptionCreateSchema],
 ):
+    """
+    Конкретная реализация интерфейса UserSubscriptionsRepositoryABC.
+    Реaлизация методов репозитория наследуется от конкретного  специфицированного шаблонного класса
+    SqlAlchemyRepository, добавляя реализацию методов специфичных для UserSubscriptionRepositoryABC
+    """
+
     def __init__(self, session: AsyncSession):
         super().__init__(
             session=session, model=UserSubscription, table=user_subscription_table
@@ -56,6 +69,11 @@ class UserSubscriptionsRepository(
 
 
 class CachedUserSubscriptionsRepository(UserSubscriptionsRepositoryABC):
+    """
+    Конкретная реализация интерфейса UserSubscriptionsRepositoryABC с добавлением функциональности кеширования.
+    Является декоратором над репозиторием реализующим UserSubscriptionRepositoryABC (UserSubscriptionRepository)
+    """
+
     def __init__(self, repo: UserSubscriptionsRepositoryABC, cache: CacheClientABC):
         self._repo = repo
         self._cache = cache

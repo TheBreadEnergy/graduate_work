@@ -16,6 +16,12 @@ from src.schemas.v1.crud.refunds import RefundCreateSchema
 
 
 class RefundRepositoryABC(RepositoryABC):
+    """
+    Интерфейс репозитория для пользовательских возвратов.
+    Нужен для спецификации базового интерфейса. Наследуется и расширяет интерфейс RepositoryABC
+    добавляя метод filter_by_status для получения фильтрованного списка пользовательских возвратов по статусу
+    """
+
     @abstractmethod
     async def filter_by_status(self, *, status: PaymentStatus) -> PaginatedPage[Refund]:
         ...
@@ -24,6 +30,12 @@ class RefundRepositoryABC(RepositoryABC):
 class RefundRepository(
     RefundRepositoryABC, SqlAlchemyRepository[Refund, RefundCreateSchema]
 ):
+    """
+    Конкретная реализация интерфейса RefundRepositoryABC.
+    Реaлизация методов репозитория наследуется от конкретного  специфицированного шаблонного класса
+    SqlAlchemyRepository, добавляя реализацию методов специфичных для RefundRepositoryABC
+    """
+
     def __init__(self, session: AsyncSession):
         super().__init__(session=session, model=Refund, table=refunds_table)
 
@@ -34,6 +46,11 @@ class RefundRepository(
 
 
 class CachedRefundRepository(RefundRepositoryABC):
+    """
+    Конкретная реализация интерфейса RefundRepositoryABC с добавлением функциональности кеширования.
+    Является декоратором над репозиторием реализующим RefundRepositoryABC (RefundRepository)
+    """
+
     def __init__(self, repo: RefundRepositoryABC, cache: CacheClientABC):  # noqa
         self._repo = repo
         self._cache = cache

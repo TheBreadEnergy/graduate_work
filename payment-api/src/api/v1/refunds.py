@@ -23,7 +23,7 @@ async def get_refunds(
     refund_query_service: RefundQueryServiceABC = Depends(),
     user: Annotated[UUID, Depends(security_jwt)] = None,
 ) -> PaginatedPage[Refund]:
-    return await refund_query_service.gets(account_id=user)
+    return await refund_query_service.get_refunds_for_account(account_id=user)
 
 
 @router.post(

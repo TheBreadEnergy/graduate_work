@@ -15,6 +15,12 @@ from src.schemas.v1.crud.wallets import WalletCreateSchema
 
 
 class WalletRepositoryABC(RepositoryABC, ABC):
+    """
+    Интерфейс репозитория для пользовательских способов оплаты.
+    Нужен для спецификации базового интерфейса. Наследуется и расширяет интерфейс RepositoryABC добавляя методы
+    get_for_user, для получения способов оплаты для пользователя и delete для удаления выбранного способа оплаты
+    """
+
     @abstractmethod
     async def get_for_user(self, *, account_id: UUID) -> list[Wallet]:
         ...
@@ -27,6 +33,12 @@ class WalletRepositoryABC(RepositoryABC, ABC):
 class WalletRepository(
     WalletRepositoryABC, SqlAlchemyRepository[Wallet, WalletCreateSchema]
 ):
+    """
+    Конкретная реализация интерфейса WalletRepositoryABC.
+    Реaлизация методов репозитория наследуется от конкретного  специфицированного шаблонного класса
+    SqlAlchemyRepository, добавляя реализацию методов специфичных для WalletRepositoryABC
+    """
+
     def __init__(self, session: AsyncSession):
         super().__init__(session=session, model=Wallet, table=wallets_table)
 
@@ -56,6 +68,11 @@ class WalletRepository(
 
 
 class CachedWalletRepository(WalletRepositoryABC):
+    """
+    Конкретная реализация интерфейса WalletRepositoryABC с добавлением функциональности кеширования.
+    Является декоратором над репозиторием реализующим WalletRepositoryABC (WalletRepository)
+    """
+
     def __init__(self, repo: WalletRepositoryABC, cache: CacheClientABC):  # noqa
         self._repo = repo
         self._cache = cache
