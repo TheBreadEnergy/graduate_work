@@ -70,13 +70,14 @@ class RefundService(RefundServiceABC):
             status = self._gateway.create_refund(payment)
             refund_obj = RefundCreateSchema(
                 account_id=payment.account_id,
+                refund_id=status.refund_id,
                 payment_id=payment_id,
                 description=description or "",
                 money=payment.price,
                 status=status.status,
                 reason=status.reason,
             )
-            refund = await self._uow.refund_repository.insert(data=refund_obj)
+            refund = self._uow.refund_repository.insert(data=refund_obj)
             await self._uow.commit()
         refund_event = RefundCreatedEvent(
             refund_id=refund.id,

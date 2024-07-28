@@ -19,6 +19,7 @@ class RefundSchema(BaseModel):
 
 class RefundCreateSchema(BaseModel):
     account_id: UUID
+    refund_id: UUID
     payment_id: UUID
     description: str
     money: decimal.Decimal

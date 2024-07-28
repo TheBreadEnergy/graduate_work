@@ -8,6 +8,7 @@ from src.models.domain.payment import PaymentStatus
 
 class Refund(DomainBase):
     idempotency_key: str | None
+    refund_id: UUID
     payment_id: UUID
     description: str | None
     money: decimal.Decimal
@@ -17,6 +18,7 @@ class Refund(DomainBase):
     def __init__(
         self,
         account_id: UUID,
+        refund_id: UUID,
         payment_id: UUID,
         money: decimal.Decimal,
         status: PaymentStatus,
@@ -28,6 +30,7 @@ class Refund(DomainBase):
     ):
         super().__init__(id=id, account_id=account_id, created=created)
         self.money = money
+        self.refund_id = refund_id
         self.idempotency_key = idempotency_key
         self.payment_id = payment_id
         self.status = status
