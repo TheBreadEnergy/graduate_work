@@ -153,7 +153,7 @@ services:
     image: jaegertracing/jaeger-collector:latest
     environment:
       SPAN_STORAGE_TYPE: elasticsearch
-      ES_SERVER_URLS: http://elastic-logs:9200
+      ES_SERVER_URLS: http://elastic:9200
     ports:
       - "14250:14250"
       - "14267:14267"
@@ -172,7 +172,7 @@ services:
       - "16687:16687"
     environment:
       SPAN_STORAGE_TYPE: elasticsearch
-      ES_SERVER_URLS: http://elastic-logs:9200
+      ES_SERVER_URLS: http://elastic:9200
     restart: unless-stopped
 
   worker-0:
