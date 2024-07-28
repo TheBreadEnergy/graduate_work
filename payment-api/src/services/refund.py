@@ -77,7 +77,7 @@ class RefundService(RefundServiceABC):
                 status=status.status,
                 reason=status.reason,
             )
-            refund = await self._uow.refund_repository.insert(data=refund_obj)
+            refund = self._uow.refund_repository.insert(data=refund_obj)
             await self._uow.commit()
         refund_event = RefundCreatedEvent(
             refund_id=refund.id,
