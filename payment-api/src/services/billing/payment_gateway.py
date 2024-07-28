@@ -155,7 +155,7 @@ class YooKassaPaymentGateway(PaymentGatewayABC):
             raise ExternalPaymentUnavailableException(message=str(e.response)) from e
         else:
             return RefundStatusSchema(
-                refund_id=result.id,
+                refund_id=UUID(result.id),
                 status=result.status,
                 payment_id=payment.id,
                 reason=(
