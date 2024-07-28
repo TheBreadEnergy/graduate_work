@@ -34,6 +34,7 @@ refunds_table = Table(
     "refunds",
     mapper_registry.metadata,
     Column("id", sqlalchemy.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("refund_id", sqlalchemy.UUID(as_uuid=True)),
     Column("idempotency_key", sqlalchemy.TEXT, nullable=True),
     Column("payment_id", sqlalchemy.UUID(as_uuid=True), nullable=False),
     Column("description", sqlalchemy.TEXT, nullable=True),

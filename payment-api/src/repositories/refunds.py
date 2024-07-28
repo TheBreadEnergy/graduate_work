@@ -26,6 +26,10 @@ class RefundRepositoryABC(RepositoryABC):
     async def filter_by_status(self, *, status: PaymentStatus) -> PaginatedPage[Refund]:
         ...
 
+    @abstractmethod
+    async def get_by_external(self, *, refund_id: UUID) -> Refund:
+        ...
+
 
 class RefundRepository(
     RefundRepositoryABC, SqlAlchemyRepository[Refund, RefundCreateSchema]
@@ -42,6 +46,11 @@ class RefundRepository(
     @backoff.on_exception(**BACKOFF_CONFIG)
     async def filter_by_status(self, *, status: PaymentStatus) -> PaginatedPage[Refund]:
         query = select(Refund).where(self._table.c.status == status)
+        return await paginate(self._session, query)
+
+    @backoff.on_exception(**BACKOFF_CONFIG)
+    async def get_by_external(self, *, refund_id: UUID) -> Refund:
+        query = select(Refund).where(self._table.c.refund_id == refund_id)
         return await paginate(self._session, query)
 
 
@@ -72,6 +81,9 @@ class CachedRefundRepository(RefundRepositoryABC):
 
     async def gets(self, *, account_id: UUID | None = None) -> PaginatedPage[Refund]:
         return await self._repo.gets(account_id=account_id)
+
+    async def get_by_external(self, *, refund_id: UUID) -> Refund:
+        return await self._repo.get_by_external(refund_id=refund_id)
 
     async def insert(self, *, data: RefundCreateSchema) -> Refund:
         return await self._repo.insert(data=data)

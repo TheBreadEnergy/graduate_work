@@ -70,6 +70,7 @@ class RefundService(RefundServiceABC):
             status = self._gateway.create_refund(payment)
             refund_obj = RefundCreateSchema(
                 account_id=payment.account_id,
+                refund_id=status.refund_id,
                 payment_id=payment_id,
                 description=description or "",
                 money=payment.price,

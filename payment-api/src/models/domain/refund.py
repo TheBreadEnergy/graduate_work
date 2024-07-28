@@ -8,6 +8,7 @@ from src.models.domain.payment import PaymentStatus
 
 class Refund(DomainBase):
     idempotency_key: str | None
+    refund_id: UUID
     payment_id: UUID
     description: str | None
     money: decimal.Decimal
