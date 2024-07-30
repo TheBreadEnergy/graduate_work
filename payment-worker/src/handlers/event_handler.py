@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.broker.rabbit import RabbitMessageBroker
 from src.core.config import settings
 from src.database.postgres import async_session_subscriptions, get_session
-from src.enums.payment import PaymentStatus
 from src.models.payment import Payment
 from src.models.refund import Refund
 from src.models.user_subscription import UserSubscription
@@ -74,19 +73,8 @@ class KafkaEventHandler(EventHandlerABC):
 
     async def check_status_and_notify(self, obj, event):
         if isinstance(event, (PaymentCancelledEvent, RefundCancelledEvent)):
-            if obj.status != PaymentStatus.cancelled:
-                logger.error(
-                    f"{obj.__class__.__name__} {obj.id} does not have status {PaymentStatus.cancelled}"
-                )
-                return
             await self.send_notification(self.get_routing_key(event), obj)
         elif isinstance(event, (PaymentSuccessEvent, RefundSuccessEvent)):
-            if obj.status != PaymentStatus.succeeded:
-                logger.error(
-                    f"{obj.__class__.__name__} {obj.id} does not have status {PaymentStatus.succeeded}"
-                )
-                return
-
             async for db_subscriptions in get_session(async_session_subscriptions):
                 user_subscription = (
                     (
