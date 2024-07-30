@@ -11,7 +11,7 @@ class UserSubscriptionSchema(BaseModel):
     subscription: SubscriptionSchema
     price: decimal.Decimal
     currency: str
-    promo_id: UUID
+    promo_id: UUID | None
     active: bool
     last_payed: datetime.datetime
     created: datetime.datetime | None
@@ -21,5 +21,5 @@ class UserSubscriptionCreateSchema(BaseModel):
     subscription: SubscriptionSchema
     price: decimal.Decimal
     currency: str
-    promo_id: UUID
+    promo_id: UUID | None
     active: bool
