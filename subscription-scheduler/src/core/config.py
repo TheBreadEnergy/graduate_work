@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", env_file=".env")
 
     database_conn: PostgresDsn = Field(
-        "postgresql+asyncpg://app:123qwe@localhost:5431/subscriptions",
+        "postgresql+asyncpg://app:123qwe@subscription-db:5432/subscriptions",
         alias="DATABASE_CONN",
         env="DATABASE_CONN",
     )
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     rabbit_password: str = Field(
         "password", alias="RABBIT_PASSWORD", env="RABBIT_PASSWORD"
     )
-    rabbit_host: str = Field("localhost", alias="RABBIT_HOST", env="RABBIT_HOST")
+    rabbit_host: str = Field("109.71.244.113", alias="RABBIT_HOST", env="RABBIT_HOST")
     rabbit_port: int = Field(5672, alias="RABBIT_PORT", env="RABBIT_PORT")
 
     routing_prefix: str = Field(

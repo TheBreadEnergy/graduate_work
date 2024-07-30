@@ -175,27 +175,48 @@ services:
       ES_SERVER_URLS: http://elastic:9200
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3.12.12-management
+    hostname: rabbitmq
+    env_file:
+      - envs/prod/.env.rabbitmq.example
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+      - rabbitmq-log:/var/log/rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    restart: unless-stopped
+
   worker-0:
     container_name: worker-0
     build: ./payment-worker
     environment:
       - WORKER_ID=worker-0
+    depends_on:
+      - rabbitmq
 
   worker-1:
     container_name: worker-1
     build: ./payment-worker
     environment:
       - WORKER_ID=worker-1
+    depends_on:
+      - rabbitmq
 
   worker-2:
     container_name: worker-2
     build: ./payment-worker
     environment:
       - WORKER_ID=worker-2
+    depends_on:
+      - rabbitmq
 
   subscription-scheduler:
     container_name: subscription-scheduler
     build: ./subscription-scheduler
+    depends_on:
+      - rabbitmq
 
   payment-admin:
     build: payment-admin
@@ -228,3 +249,5 @@ volumes:
   elastic-data:
   payment-admin-static:
   payment-admin-data:
+  rabbitmq-data:
+  rabbitmq-log:
