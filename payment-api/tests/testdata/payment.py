@@ -37,7 +37,7 @@ def generate_test_payment(payment_id: uuid.UUID | None = None):
         subscription_id=payment_id,
         price=Decimal(800),
         currency="RUB",
-        status=PaymentStatus.success,
+        status=PaymentStatus.succeeded,
         idempotency_key=str(payment_id),
         description="",
         reason=None,
@@ -48,7 +48,7 @@ def generate_test_payment(payment_id: uuid.UUID | None = None):
 def generate_test_pay_status(mock_id: uuid.UUID, with_payment_info: bool = True):
     return PayStatusSchema(
         payment_id=mock_id,
-        status=PaymentStatus.success,
+        status=PaymentStatus.succeeded,
         redirection_url="",
         reason=None,
         payment_information=(
@@ -85,7 +85,7 @@ def generate_payment_test_data(save_method: bool):
         subscription_id=mock_id,
         price=payment.price,
         currency=payment.currency,
-        status=PaymentStatus.success,
+        status=PaymentStatus.succeeded,
         reason=None,
     )
     wallet: WalletCreateSchema | None = None

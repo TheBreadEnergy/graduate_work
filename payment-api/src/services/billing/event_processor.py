@@ -36,7 +36,7 @@ class YookassaBillingEventProcessor(BillingEventProcessorABC):
             case WebhookNotificationEventType.PAYMENT_SUCCEEDED:
                 payment_event = PaymentSuccessEvent(payment_id=event.id)
                 await self._handler.handle_payment_event(payment_event)
-                await self._handle_payment_status(event.id, PaymentStatus.success)
+                await self._handle_payment_status(event.id, PaymentStatus.succeeded)
             case WebhookNotificationEventType.PAYMENT_CANCELED:
                 payment_event = PaymentCancelledEvent(
                     payment_id=event.id,
@@ -47,7 +47,7 @@ class YookassaBillingEventProcessor(BillingEventProcessorABC):
             case WebhookNotificationEventType.REFUND_SUCCEEDED:
                 refund_event = RefundSuccessEvent(refund_id=event.id)
                 await self._handle_refund_status(
-                    refund_id=event.id, status=PaymentStatus.success
+                    refund_id=event.id, status=PaymentStatus.succeeded
                 )
                 await self._handler.handle_refund_event(refund_event)
             case _:

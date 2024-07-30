@@ -28,7 +28,7 @@ def generate_test_refund(mock_id: uuid.UUID | None = None):
         account_id=mock_id,
         payment_id=mock_id,
         money=Decimal(800),
-        status=PaymentStatus.success,
+        status=PaymentStatus.succeeded,
         reason=None,
         id=mock_id,
     )
@@ -37,7 +37,7 @@ def generate_test_refund(mock_id: uuid.UUID | None = None):
 def generate_test_refund_service_data() -> RefundTestData:
     mock_id = uuid.uuid4()
     refund_status = RefundStatusSchema(
-        status=PaymentStatus.success, payment_id=mock_id, reason=None
+        status=PaymentStatus.succeeded, payment_id=mock_id, reason=None
     )
     refund = generate_test_refund(mock_id)
     payment = generate_test_payment(mock_id)
@@ -46,7 +46,7 @@ def generate_test_refund_service_data() -> RefundTestData:
         payment_id=mock_id,
         description="",
         money=Decimal(800),
-        status=PaymentStatus.success,
+        status=PaymentStatus.succeeded,
         reason=None,
     )
 

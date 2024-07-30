@@ -176,7 +176,7 @@ class MockPaymentGateway(PaymentGatewayABC):
     ) -> PayStatusSchema:
         return PayStatusSchema(
             payment_id=uuid.uuid4(),
-            status=PaymentStatus.success,
+            status=PaymentStatus.succeeded,
             redirection_url="",
             reason=None,
             payment_information=(
@@ -189,7 +189,7 @@ class MockPaymentGateway(PaymentGatewayABC):
     @backoff.on_exception(**BACKOFF_CONFIG)
     def create_refund(self, payment: Payment, description: str | None = None):
         return RefundStatusSchema(
-            status=PaymentStatus.success, payment_id=payment.id, reason=None
+            status=PaymentStatus.succeeded, payment_id=payment.id, reason=None
         )
 
     @backoff.on_exception(**BACKOFF_CONFIG)
