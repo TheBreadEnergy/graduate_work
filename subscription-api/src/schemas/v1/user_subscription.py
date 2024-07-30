@@ -14,7 +14,7 @@ class UserSubscriptionSchema(BaseModel):
     promo_id: UUID
     active: bool
     last_payed: datetime.datetime
-    created: datetime.datetime
+    created: datetime.datetime | None
 
 
 class UserSubscriptionCreateSchema(BaseModel):

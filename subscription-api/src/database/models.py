@@ -56,6 +56,7 @@ user_subscription_table = Table(
     Column(
         "created",
         sqlalchemy.DateTime(timezone=True),
+        nullable=True,
         default=date_factory,
     ),
 )
