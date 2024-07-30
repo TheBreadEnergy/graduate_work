@@ -81,11 +81,11 @@ class KafkaEventHandler(EventHandlerABC):
                 return
             await self.send_notification(self.get_routing_key(event), obj)
         elif isinstance(event, (PaymentSuccessEvent, RefundSuccessEvent)):
-            if obj.status != PaymentStatus.succeeded:
-                logger.error(
-                    f"{obj.__class__.__name__} {obj.id} does not have status {PaymentStatus.succeeded}"
-                )
-                return
+            # if obj.status != PaymentStatus.succeeded:
+            #     logger.error(
+            #         f"{obj.__class__.__name__} {obj.id} does not have status {PaymentStatus.succeeded}"
+            #     )
+            #     return
 
             async for db_subscriptions in get_session(async_session_subscriptions):
                 user_subscription = (
