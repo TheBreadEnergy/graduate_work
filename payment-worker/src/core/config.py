@@ -6,13 +6,13 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", env_file=".env")
 
     database_conn_payments: PostgresDsn = Field(
-        "postgresql+asyncpg://app:123qwe@payment-db:5432/payments",
+        "postgresql+asyncpg://app:123qwe@109.71.244.113:5455/payments",
         alias="DATABASE_CONN_PAYMENTS",
         env="DATABASE_CONN_PAYMENTS",
     )
 
     database_conn_subscriptions: PostgresDsn = Field(
-        "postgresql+asyncpg://app:123qwe@subscription-db:5432/subscriptions",
+        "postgresql+asyncpg://app:123qwe@109.71.244.113:5456/subscriptions",
         alias="DATABASE_CONN_SUBSCRIPTIONS",
         env="DATABASE_CONN_SUBSCRIPTIONS",
     )

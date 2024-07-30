@@ -4,7 +4,6 @@ from typing import List
 import backoff
 from aiokafka import AIOKafkaConsumer
 from aiokafka.errors import KafkaError, KafkaTimeoutError, NoBrokersAvailable
-
 from src.broker.base import AbstractKafkaClient
 from src.core.config import settings
 from src.database.postgres import async_session_payments, get_session

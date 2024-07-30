@@ -103,6 +103,7 @@ class KafkaEventHandler(EventHandlerABC):
                             promo_id=None,
                             active=True,
                             last_payed=datetime.now(),
+                            created=datetime.now(),
                         )
                         db_subscriptions.add(user_subscription)
                 await db_subscriptions.commit()

@@ -9,7 +9,6 @@ from aio_pika.abc import (
     AbstractRobustConnection,
     ExchangeType,
 )
-
 from src.broker.base import MessageBrokerABC
 from src.core.config import ROUTING_KEYS, settings
 

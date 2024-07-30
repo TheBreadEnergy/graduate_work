@@ -3,7 +3,6 @@ import uuid
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as UUIDType
 from sqlalchemy.sql import func
-
 from src.database.base import Base
 
 
@@ -19,3 +18,4 @@ class UserSubscription(Base):
     active = Column(Boolean, nullable=False)
     last_notified = Column(DateTime(timezone=True), default=func.now(), nullable=False)
     last_payed = Column(DateTime(timezone=True), default=func.now(), nullable=False)
+    created = Column(DateTime(timezone=True), default=func.now(), nullable=True)
