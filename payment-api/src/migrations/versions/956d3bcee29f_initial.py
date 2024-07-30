@@ -5,6 +5,7 @@ Revises:
 Create Date: 2024-07-20 16:07:00.693955
 
 """
+
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -32,7 +33,7 @@ def upgrade() -> None:
             sa.Enum(
                 "created",
                 "pending",
-                "success",
+                "succeeded",
                 "cancelled",
                 "waiting_to_capture",
                 name="paymentstatus",
