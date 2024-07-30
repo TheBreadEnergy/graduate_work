@@ -189,34 +189,38 @@ services:
     restart: unless-stopped
 
   worker-0:
-    container_name: worker-0
     build: ./payment-worker
     environment:
       - WORKER_ID=worker-0
     depends_on:
       - rabbitmq
+      - payment-db
+      - subscription-db
 
   worker-1:
-    container_name: worker-1
     build: ./payment-worker
     environment:
       - WORKER_ID=worker-1
     depends_on:
       - rabbitmq
+      - payment-db
+      - subscription-db
 
   worker-2:
-    container_name: worker-2
     build: ./payment-worker
     environment:
       - WORKER_ID=worker-2
     depends_on:
       - rabbitmq
+      - payment-db
+      - subscription-db
 
   subscription-scheduler:
     container_name: subscription-scheduler
     build: ./subscription-scheduler
     depends_on:
       - rabbitmq
+      - subscription-db
 
   payment-admin:
     build: payment-admin

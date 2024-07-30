@@ -4,7 +4,6 @@ from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.broker.rabbit import RabbitMessageBroker
 from src.core.config import settings
 from src.database.postgres import async_session_subscriptions, get_session
@@ -29,10 +28,12 @@ logger = logging.getLogger(__name__)
 
 class EventHandlerABC(ABC):
     @abstractmethod
-    async def handle_payment_event(self, db: AsyncSession, event: PaymentEventABC): ...
+    async def handle_payment_event(self, db: AsyncSession, event: PaymentEventABC):
+        ...
 
     @abstractmethod
-    async def handle_refund_event(self, db: AsyncSession, event: RefundEventABC): ...
+    async def handle_refund_event(self, db: AsyncSession, event: RefundEventABC):
+        ...
 
 
 class KafkaEventHandler(EventHandlerABC):
@@ -62,7 +63,7 @@ class KafkaEventHandler(EventHandlerABC):
         refund = (
             (
                 await db.execute(
-                    select(Refund).where(Refund.payment_id == event.payment_id)
+                    select(Refund).where(Refund.refund_id == event.refund_id)
                 )
             )
             .scalars()
